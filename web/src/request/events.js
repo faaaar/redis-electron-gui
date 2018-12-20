@@ -1,0 +1,4 @@
+export default {
+  CONNECT: 'EVENT_CONNECT',
+  COMMAND: 'EVENT_COMMAND',
+}

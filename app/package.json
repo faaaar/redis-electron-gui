@@ -1,0 +1,33 @@
+{
+    "name": "docker-gui-app",
+    "version": "1.0.0",
+    "description": "A minimal Electron application",
+    "auth": {
+        "name": "Li Yunfan",
+        "email": "leeyunfans@gmail.com"
+    },
+    "license": "MIT",
+    "repository": "https://github.com/faaaar/redis-gui",
+    "homepage": "",
+    "scripts": {
+        "start": "NODE_ENV=development electron .",
+        "prod": "NODE_ENV=production electron ."
+    },
+    "devDependencies": {
+        "electron": "^3.0.7",
+        "electron-builder": "^20.36.2"
+    },
+    "main": "main.js",
+    "build": {
+        "appId": "com.electron.redis-gui",
+        "directories": {
+            "output": "linux-bin"
+        },
+        "linux": {
+            "target": "zip"
+        }
+    },
+    "dependencies": {
+        "redis": "^2.8.0"
+    }
+}
