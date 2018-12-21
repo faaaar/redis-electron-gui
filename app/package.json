@@ -1,5 +1,5 @@
 {
-    "name": "docker-gui-app",
+    "name": "redis-electron-gui",
     "version": "1.0.0",
     "description": "A minimal Electron application",
     "auth": {
@@ -7,7 +7,7 @@
         "email": "leeyunfans@gmail.com"
     },
     "license": "MIT",
-    "repository": "https://github.com/faaaar/redis-gui",
+    "repository": "https://github.com/faaaar/redis-electron-gui",
     "homepage": "",
     "scripts": {
         "start": "NODE_ENV=development electron .",
@@ -19,7 +19,7 @@
     },
     "main": "main.js",
     "build": {
-        "appId": "com.electron.redis-gui",
+        "appId": "com.electron.redis-electron-gui",
         "directories": {
             "output": "linux-bin"
         },
@@ -28,6 +28,7 @@
         }
     },
     "dependencies": {
+        "ini": "^1.3.5",
         "redis": "^2.8.0"
     }
 }

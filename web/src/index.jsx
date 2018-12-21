@@ -8,7 +8,6 @@ import {
   Switch,
   NavLink,
 } from 'react-router-dom'
-
 import RedisView from './views/Redis' 
 import * as serviceWorker from './serviceWorker'
 import './index.scss'
@@ -21,12 +20,6 @@ class App extends React.Component {
     this.state = {
       current: 'redis',
     }
-  }
-
-  componentDidMount() {
-    // if (window.location.pathname === '/') {
-    //   window.location.href = '/'
-    // }
   }
   
   handleClick = e => {
@@ -59,7 +52,7 @@ class App extends React.Component {
                   onClick={e => this.handleClick(e)}
                   defaultSelectedKeys={[ `redis` ]}>
                   <Menu.Item style={{marginTop: 0}} key={`redis`}>
-                    <NavLink to="/">Filter</NavLink>
+                    <NavLink to="/">Search</NavLink>
                   </Menu.Item>
                 </Menu>
               </Sider> 

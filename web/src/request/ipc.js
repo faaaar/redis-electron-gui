@@ -2,7 +2,7 @@ import {ipcRenderer} from 'electron'
 import EVENTS from './events'
 
 const ipc = {
-  send: (args, callback) => {
+  send: (args) => {
     const {
       type,
       data,
@@ -20,9 +20,19 @@ const ipc = {
       ipcRenderer.send(`request_${type}`, data)
     })  
   },
-  redisExec: async (cmd, params) => {
+  redisExec: async (client, cmd, params) => {
+    if (!cmd) {
+      return
+    }
     try {
-      const data = await ipc.send({type: EVENTS.COMMAND, data: {cmd, params}})
+      const data = await ipc.send({
+        type: EVENTS.COMMAND,
+        data: {
+          cmd,
+          params,
+          client,
+        },
+      })
 
       return data
     } catch (error) {
