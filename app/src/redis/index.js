@@ -11,6 +11,7 @@ const Connect = function(clientName, callback) {
   client = redis.createClient(obj)
   client.ping(callback)
   clientList[clientName] = client
+
   client.on("error", function (err) {
     console.log("Error " + err);
   });
@@ -23,7 +24,7 @@ const GetClient = function(key) {
 const Command = function(obj, callback) {
   let client = clientList[obj.client]
   const params = obj.params
-
+  
   if (!client) {
     Connect(obj.client, function() {
       client = clientList[obj.client]

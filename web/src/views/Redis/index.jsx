@@ -32,11 +32,12 @@ export default class extends React.Component {
 
   SearchRedis(treeNode) {
     return new Promise(async (resolve) => {
-      const key = this.state.searchKey || '*'
+      const key = this.state.searchKey || ['test*']
       const clientName = treeNode.props.eventKey
       const dataList = await ipc.redisExec(clientName, 'keys', key)
+      
       const redisData = this.state.redisData
-      redisData[clientName] = dataList
+      redisData[clientName] = dataList 
 
       this.setState({
         redisData,
