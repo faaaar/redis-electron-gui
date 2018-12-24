@@ -24,7 +24,8 @@ const GetClient = function(key) {
 const Command = function(obj, callback) {
   let client = clientList[obj.client]
   const params = obj.params
-  
+
+
   if (!client) {
     Connect(obj.client, function() {
       client = clientList[obj.client]

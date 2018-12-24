@@ -1,0 +1,32 @@
+.app-redis {
+  height: 100%;
+  overflow: hidden;
+  // overflow: hidden;
+  // &::-webkit-scrollbar {
+  //   display: none !important;
+  // }
+}
+
+.app-redis-option-panel{
+  .option-list {
+    display: flex;
+    flex-flow: row nowrap;
+  }
+
+  .option-item {
+  }
+}
+
+.app-redis-data-panel {
+  height: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: space-between;
+
+  .redis-key-list {
+    width: 33vw;
+    overflow: scroll;
+    padding-bottom: 16px;
+  }
+}

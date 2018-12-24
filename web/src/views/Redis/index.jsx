@@ -1,22 +1,28 @@
 import React from 'react'
-import { Layout, Button } from 'antd'
-import RDKeyList from './RDKeyList'
+import RedisKey from './RedisKey'
+import OptionPanel from './OptionPanel'
 import { Provider } from './context' 
 import ipc from '../../request/ipc'
 import EVENTS from '../../request/events'
 
-const { Sider } = Layout
+import './index.scss'
+
 export default class extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
       config: [],
-      searchKey: '',
-      redisData: {
-        // KEY: [],
-      },
 
+      selectedRedis: '', 
+
+      searchKey: '',
+      searchData: [],
+
+      selectedKey: '',
+      
       SearchRedis: this.SearchRedis.bind(this),
+      SelectRedis: this.SelectRedis.bind(this),
+      SelectNode: this.SelectNode.bind(this),
     }
   }
 
@@ -30,20 +36,23 @@ export default class extends React.Component {
     })
   }
 
-  SearchRedis(treeNode) {
-    return new Promise(async (resolve) => {
-      const key = this.state.searchKey || ['test*']
-      const clientName = treeNode.props.eventKey
-      const dataList = await ipc.redisExec(clientName, 'keys', key)
-      
-      const redisData = this.state.redisData
-      redisData[clientName] = dataList 
+  SelectNode(node) {
+    console.log(node)
+  }
 
-      this.setState({
-        redisData,
-      })
+  SelectRedis(selectedRedis) {
+    this.setState({
+      selectedRedis,
+    })
+  }
 
-      resolve()
+  async SearchRedis(searchKey) {
+    const selectedRedis = this.state.selectedRedis
+    const searchData = await ipc.redisExec(selectedRedis, 'keys', [searchKey])
+
+    console.log(searchData)
+    this.setState({
+      searchData,
     })
   }
   
@@ -51,7 +60,12 @@ export default class extends React.Component {
     return (
       <Provider value={this.state}>
         <div className="app-redis">
-          <RDKeyList />
+          <div className="app-redis-option-panel">
+            <OptionPanel />
+          </div>
+          <div className="app-redis-data-panel">
+            <RedisKey />
+          </div>
         </div>
       </Provider>
     )
