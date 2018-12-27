@@ -36,7 +36,7 @@ const ipc = {
 
       return data
     } catch (error) {
-      console.error(error)
+      alert(error)
       return error
     }
   },

@@ -27,6 +27,7 @@ export default WithRedis(class  extends React.Component {
 
     return (
       <Select
+        value={this.props.data.selectedRedis}
         placeholder='Select a redis'
         style={{ width: 200 }}
         onChange={value => this.props.data.SelectRedis(value)}>
@@ -42,6 +43,7 @@ export default WithRedis(class  extends React.Component {
   renderRedisSearch() {
     return (
       <Search
+        defaultValue={this.props.data.searchKey}
         placeholder="input search text"
         onSearch={value => this.props.data.SearchRedis(value)}
         enterButton

@@ -8,6 +8,7 @@
 }
 
 .app-redis-option-panel{
+  margin-bottom: 16px;
   .option-list {
     display: flex;
     flex-flow: row nowrap;
@@ -25,8 +26,55 @@
   justify-content: space-between;
 
   .redis-key-list {
-    width: 33vw;
+    width: 360px;
     overflow: scroll;
     padding-bottom: 16px;
+  }
+
+  .redis-key-detail {
+    // display: flex;
+    // flex-flow: column nowrap;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    padding: 0 16px;
+    
+  }
+
+  .redis-detail-header {
+    .line-1 {
+      display: flex;
+      flex-flow: row nowrap;
+      justify-content: left;
+      flex: 1;
+      
+      align-items: center;
+      .key-type,
+      .key-name,
+      .key-ttl {
+        font-size: 16px;
+        margin-right: 24px;
+        font-weight: 700;
+      }
+      
+      .key-type {
+        text-transform: uppercase;
+      }
+
+      .key-name {
+        flex: 1;
+      }
+      
+      .key-ttl {
+        text-transform: uppercase;
+      }
+    }
+  }
+
+  .redis-string {
+    .redis-data-value {
+      width: 100%;
+      height: 400px;
+    }
   }
 }

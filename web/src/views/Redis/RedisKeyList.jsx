@@ -10,10 +10,10 @@ export default WithRedis(class RedisKey extends React.Component {
     if(!selectedRedisName) {
       return <div />
     }
+
     const searchData = this.props.data.searchData
-    
     const treeNodeList = searchData.map(v => (
-      <TreeNode key={v} title={v} />
+      <TreeNode isLeaf key={v} title={v} />
     ))
 
     return(
@@ -21,6 +21,7 @@ export default WithRedis(class RedisKey extends React.Component {
         <Tree
           defaultExpandParent={true}
           defaultExpandedKeys={['-']}
+          selectedKeys={[this.props.data.selectedKey]}
           onSelect={this.props.data.SelectNode.bind(this)}
         >
           <TreeNode title={`root-${selectedRedisName}`} key='-'>
