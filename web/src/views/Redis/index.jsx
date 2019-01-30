@@ -121,9 +121,9 @@ export default class extends React.Component {
         <div className='app-redis'>
           <div className='app-redis-option-panel'>
             <OptionPanel />
+            <RedisKeyList />
           </div>
           <div className='app-redis-data-panel'>
-            <RedisKeyList />
             <RedisKeyDetail />
           </div>
         </div>

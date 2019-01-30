@@ -12,21 +12,18 @@ export default WithRedis(class RedisKey extends React.Component {
     }
 
     const searchData = this.props.data.searchData
-    const treeNodeList = searchData.map(v => (
-      <TreeNode isLeaf key={v} title={v} />
-    ))
 
     return(
       <div className='redis-key-list'>
         <Tree
-          defaultExpandParent={true}
-          defaultExpandedKeys={['-']}
           selectedKeys={[this.props.data.selectedKey]}
           onSelect={this.props.data.SelectNode.bind(this)}
         >
-          <TreeNode title={`root-${selectedRedisName}`} key='-'>
-            {treeNodeList}
-          </TreeNode>
+          {
+            searchData.map(v => (
+              <TreeNode isLeaf key={v} title={v} />
+            ))
+          }
         </Tree>
       </div>
     )

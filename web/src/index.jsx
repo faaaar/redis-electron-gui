@@ -33,36 +33,10 @@ class App extends React.Component {
       <BrowserRouter basename="/"> 
         <div className="app"> 
           <Layout>
-            <Header>
-              <Menu
-                onClick={this.handleClick}
-                selectedKeys={[ this.state.current ]}
-                mode="horizontal">
-                <Menu.Item key="redis">
-                  <Icon type="block" />Redis
-                </Menu.Item>
-              </Menu>
-            </Header>
-            <Layout>
-              <Sider>
-                <Menu
-                  className="docker-menu"
-                  style={{ height: '100%' }} 
-                  mode="inline"
-                  onClick={e => this.handleClick(e)}
-                  defaultSelectedKeys={[ `redis` ]}>
-                  <Menu.Item style={{marginTop: 0}} key={`redis`}>
-                    <NavLink to="/">Search</NavLink>
-                  </Menu.Item>
-                </Menu>
-              </Sider> 
-              <Layout>
-                <Switch>
-                  <Route exact={true} path="/" component={RedisView} />
-                </Switch>
-              </Layout>
-            </Layout>
-          </Layout> 
+            <Switch>
+              <Route exact={true} path="/" component={RedisView} />
+            </Switch>
+          </Layout>
         </div>
       </BrowserRouter>
     )

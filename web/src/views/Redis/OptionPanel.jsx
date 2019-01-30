@@ -26,17 +26,19 @@ export default WithRedis(class  extends React.Component {
     }
 
     return (
-      <Select
-        value={this.props.data.selectedRedis}
-        placeholder='Select a redis'
-        style={{ width: 200 }}
-        onChange={value => this.props.data.SelectRedis(value)}>
-        {
-          Object.keys(redisConnect).map((v, i) => (
-            <Option value={v} key={v}>{v}</Option>
-          ))
-        }
-      </Select>
+      <React.Fragment>
+        <Select
+          value={this.props.data.selectedRedis}
+          placeholder='Select a redis'
+          style={{ width: "100%" }}
+          onChange={value => this.props.data.SelectRedis(value)}>
+          {
+            Object.keys(redisConnect).map((v, i) => (
+              <Option value={v} key={v}>{v}</Option>
+            ))
+          }
+        </Select>
+      </React.Fragment>
     )
   }
 

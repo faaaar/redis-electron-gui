@@ -1,6 +1,8 @@
 .app-redis {
   height: 100%;
   overflow: hidden;
+  display: flex;
+  flex-flow: row nowrap;
   // overflow: hidden;
   // &::-webkit-scrollbar {
   //   display: none !important;
@@ -8,13 +10,23 @@
 }
 
 .app-redis-option-panel{
-  margin-bottom: 16px;
+  width: 360;
+  display: flex;
+  flex-flow: column nowrap;
+
   .option-list {
     display: flex;
-    flex-flow: row nowrap;
+    flex-flow: column nowrap;
   }
 
   .option-item {
+  }
+
+  .redis-key-list {
+    flex:1;
+    display: row nowrap;
+    width: 360px; 
+    overflow: scroll;
   }
 }
 
@@ -24,12 +36,7 @@
   display: flex;
   flex-flow: row nowrap;
   justify-content: space-between;
-
-  .redis-key-list {
-    width: 360px;
-    overflow: scroll;
-    padding-bottom: 16px;
-  }
+  flex: 1;
 
   .redis-key-detail {
     // display: flex;
