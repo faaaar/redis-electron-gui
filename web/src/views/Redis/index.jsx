@@ -21,13 +21,36 @@ export default class extends React.Component {
 
       selectedKey: '',
       selectedData: '',
-      selectedType: '',
+      selectedType: '',     
+
+      isAddData: false,
+      addData: {
+        valueType: '',
+        valueKey: '',
+        valueData: null,
+        ttl: -1,
+      },
       
       SearchRedis: this.SearchRedis.bind(this),
       SelectRedis: this.SelectRedis.bind(this),
       SelectNode: this.SelectNode.bind(this),
-      UpdateRedisStringKey: this.UpdateRedisStringKey.bind(this)
+      UpdateRedisStringKey: this.UpdateRedisStringKey.bind(this),
+      DeleteRedisKey: this.DeleteRedisKey.bind(this),
+      UpdateAddValue: this.UpdateAddValue.bind(this),
     }
+  }
+
+  UpdateAddValue(key, value) {
+    if (!this.state.isAddData) {
+      return
+    }
+
+    const nextData = this.state.addData
+    
+    nextData[key] = value
+    this.setState({
+      addData: nextData,
+    })
   }
 
   async componentDidMount() {
@@ -40,9 +63,18 @@ export default class extends React.Component {
     })
   }
 
-  async UpdateRedisStringKey(redis,key, value) {
+  async UpdateRedisStringKey(redis, key, value) {
     const res = await ipc.redisExec(redis, 'set', [key, value])
 
+    alert(res)
+  }
+
+  async DeleteRedisKey(redis, key) {
+    const res = await ipc.redisExec(redis, 'del', [key])
+
+    if (res === 1) {
+
+    }
     alert(res)
   }
 
@@ -109,13 +141,12 @@ export default class extends React.Component {
     
     const searchData = await ipc.redisExec(selectedRedis, 'keys', [searchKey])
 
-    console.log(searchData)
     this.setState({
       searchData,
     })
   }
   
-  render() {
+  render() {    
     return (
       <Provider value={this.state}>
         <div className='app-redis'>

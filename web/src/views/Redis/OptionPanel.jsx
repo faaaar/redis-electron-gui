@@ -56,7 +56,7 @@ export default WithRedis(class  extends React.Component {
   render() {
     return(
       <div className="option-list">
-        <div className="option-item">
+                <div className="option-item">
           {this.renderRedisList()}
         </div>
         <div className="option-item">
