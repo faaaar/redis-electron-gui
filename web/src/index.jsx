@@ -1,18 +1,15 @@
 import 'react-app-polyfill/jsdom'
 import React from 'react'
 import ReactDOM from 'react-dom'
-import { Layout, Menu, Icon, } from 'antd';
+import { Layout, } from 'antd';
 import {
   BrowserRouter,
   Route,
   Switch,
-  NavLink,
 } from 'react-router-dom'
 import RedisView from './views/Redis' 
 import * as serviceWorker from './serviceWorker'
 import './index.scss'
-
-const { Header, Sider } = Layout
 
 class App extends React.Component {
   constructor(props) {

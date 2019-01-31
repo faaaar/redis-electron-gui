@@ -31,7 +31,10 @@ export default WithRedis(class  extends React.Component {
           value={this.props.data.selectedRedis}
           placeholder='Select a redis'
           style={{ width: "100%" }}
-          onChange={value => this.props.data.SelectRedis(value)}>
+          onChange={selectedRedis => this.props.data.updateState({
+            selectedRedis,
+          })}
+        >
           {
             Object.keys(redisConnect).map((v, i) => (
               <Option value={v} key={v}>{v}</Option>
@@ -47,7 +50,7 @@ export default WithRedis(class  extends React.Component {
       <Search
         defaultValue={this.props.data.searchKey}
         placeholder="input search text"
-        onSearch={value => this.props.data.SearchRedis(value)}
+        onSearch={value => this.props.data.ipcSearchRedis(value)}
         enterButton
       />
     )
@@ -56,7 +59,7 @@ export default WithRedis(class  extends React.Component {
   render() {
     return(
       <div className="option-list">
-                <div className="option-item">
+        <div className="option-item">
           {this.renderRedisList()}
         </div>
         <div className="option-item">

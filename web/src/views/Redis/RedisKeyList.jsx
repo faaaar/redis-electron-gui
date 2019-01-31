@@ -1,13 +1,46 @@
 import React from 'react'
-import { Tree, Button, Modal, Input, Select } from 'antd'
-import AddKeyModal from './AddKeyModal'
+import { Tree, Button } from 'antd'
 
 import { WithRedis } from './context'
 
-const { Option } = Select
 const { TreeNode } = Tree
 
 export default WithRedis(class RedisKey extends React.Component {
+  async selectNode(keys, tree) {
+    if (!tree.node.props.isLeaf || (!keys || !keys.length)) {
+      return
+    }
+
+    const {
+      selectedRedis,
+      ipcGetDataType,
+      ipcGetData,
+      updateState,
+    } = this.props.data
+    
+    if (!selectedRedis) {
+      alert('请选择redis')
+      return
+    }
+    
+    const dataType = await ipcGetDataType(keys)
+    if (!dataType) {
+      return
+    }
+
+    const currentData = await ipcGetData(dataType, keys)
+    if (!currentData) {
+      return
+    }
+    
+    updateState({
+      currentKey: keys[0],
+      currentData: currentData,
+      currentType: dataType,
+    })
+  }
+
+  
   render() {
     const selectedRedis = this.props.data.selectedRedis
     if(!selectedRedis) {
@@ -21,9 +54,9 @@ export default WithRedis(class RedisKey extends React.Component {
         <Tree
           defaultExpandAll
           selectedKeys={[this.props.data.selectedKey]}
-          onSelect={this.props.data.SelectNode.bind(this)}
+          onSelect={(keys, tree) => this.selectNode(keys, tree)} 
         >
-          <TreeNode title="ROOT">
+          <TreeNode isLeaf={false} title="ROOT">
             {
               searchData.map(v => (
                 <TreeNode isLeaf key={v} title={v} />
@@ -32,6 +65,7 @@ export default WithRedis(class RedisKey extends React.Component {
           </TreeNode>
         </Tree>
         <Button
+          onClick={() => this.props.data.updateIsAddStatus(true)}
           className="add-key-btn" 
           type="primary"
           shape="circle"

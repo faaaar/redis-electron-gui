@@ -9,10 +9,7 @@ const Option = Select.Option
 export default WithRedis(class RedisKey extends React.Component {
   renderHash() {
     const {
-      selectedKey,
-      selectedData,
-      selectedRedis,
-      UpdateRedisStringKey,
+      currentData,
     } = this.props.data
     
     const columns = [{
@@ -36,7 +33,7 @@ export default WithRedis(class RedisKey extends React.Component {
         )
       }
     }]
-    const dataSource = Object.keys(selectedData).map(key => ({key, value: selectedData[key]}) )
+    const dataSource = Object.keys(currentData).map(key => ({key, value: currentData[key]}) )
     
     return (
       <Table
@@ -52,21 +49,23 @@ export default WithRedis(class RedisKey extends React.Component {
   
   renderString() {
     const {
-      selectedKey,
-      selectedData,
-      selectedRedis,
-      UpdateRedisStringKey,
+      currentKey,
+      currentData,
+      currentRedis,
+      ipcUpdateRedisStringKey,
+      updateState,
     } = this.props.data
     
     return (
       <div className="redis-string">
-        <h1>render string</h1>
         <textarea
-          ref="J_textArea"
+          onChange={e => updateState({
+            currentData: e.target.value,
+          })}
           className="redis-data-value"
-          defaultValue={selectedData} />
+          value={currentData} />
         <Button
-          onClick={() => UpdateRedisStringKey(selectedRedis, selectedKey, this.refs.J_textArea.value)}
+          onClick={() => ipcUpdateRedisStringKey()}
           type="primary">
           Save
         </Button>
@@ -88,65 +87,71 @@ export default WithRedis(class RedisKey extends React.Component {
   
   renderHeader() {
     const {
-      selectedRedis,
-      selectedKey,
-      selectedType,
+      currentRedis,
+      currentKey,
+      currentType,
+      currentTTL,
       isAddData,
       addData,
-      DeleteRedisKey,
-      UpdateAddValue,
+      ipcDeleteRedisKey,
+      updateState,
     } = this.props.data
 
     return (
-      <div className="redis-detail-header">
-        <div className="line-1">
-          <InputGroup compact>
-            <Select
-              onSelect={valueType => UpdateAddValue('valueType', valueType)}
-              style={{width: "15%"}}
-              value={isAddData ? addData['valueType'] : selectedType}
-            >
-              <Option value="string">String</Option>
-              <Option value="hash">Hash</Option>
-              <Option value="list">List</Option>
-              <Option value="set">Set</Option>
-              <Option value="zset">ZSet</Option>
-            </Select>
-            <Input
-              placeholder="Redis Key"
-              onChange={e => UpdateAddValue('valueKey', e.target.value)}
-              style={{width: "30%"}}
-              value={isAddData ? addData['valueKey'] : selectedKey}
-            />
-            <Input
-              placeholder="Redis Key TTL"
-              onChange={e => UpdateAddValue('ttl', e.target.value)}
-              style={{width: "15%"}}
-              value={isAddData ? addData['ttl'] : ''}
-            />
-            
-            <ButtonGroup style={{width: "40%"}}>
-              <Button type="danger" onClick={() => DeleteRedisKey(selectedRedis, selectedKey)}>Delete</Button>
-              <Button type="primary">Rename</Button>
-              <Button type="primary">Reload</Button>
-              <Button type="primary">Set TTL</Button>
-            </ButtonGroup>
-          </InputGroup>
+      <React.Fragment>
+        <p>Current Status: {this.props.data.isAddData ? 'New' : 'View'}</p> 
+        <div className="redis-detail-header">
+          <div className="line-1">
+            <InputGroup compact>
+              <Select
+                onSelect={currentType => updateState({
+                  currentType,
+                })}
+                style={{width: "15%"}}
+                value={currentType}
+              >
+                <Option value="string">String</Option>
+                <Option value="hash">Hash</Option>
+                <Option value="list">List</Option>
+                <Option value="set">Set</Option>
+                <Option value="zset">ZSet</Option>
+              </Select>
+              <Input
+                placeholder="Redis Key"
+                onChange={e => updateState('currentKey', e.target.value)}
+                style={{width: "30%"}}
+                value={currentKey}
+              />
+              <Input
+                placeholder="Redis Key TTL"
+                onChange={e => updateState({
+                  currentTTL: e.target.value,
+                })}
+                style={{width: "15%"}}
+                value={currentTTL}
+              />
+              
+              <ButtonGroup style={{width: "40%"}}>
+                <Button type="danger" onClick={() => ipcDeleteRedisKey(currentRedis, currentKey)}>Delete</Button>
+                <Button type="primary">Rename</Button>
+                <Button type="primary">Reload</Button>
+                <Button type="primary">Set TTL</Button>
+              </ButtonGroup>
+            </InputGroup>
+          </div>
         </div>
-      </div>
+      </React.Fragment>
     )
   }
   
   render() {
     const {
-      selectedKey,
-      selectedData,
-      selectedType,
+      currentType,
     } = this.props.data
     
     let renderFunc = () => {}
 
-    switch(selectedType) {
+    switch(currentType) {
       case 'string':
         renderFunc = this.renderString.bind(this)
         break
