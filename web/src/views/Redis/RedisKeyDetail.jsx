@@ -87,7 +87,6 @@ export default WithRedis(class RedisKey extends React.Component {
   
   renderHeader() {
     const {
-      currentRedis,
       currentKey,
       currentType,
       currentTTL,

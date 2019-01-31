@@ -96,7 +96,6 @@ export default class extends React.Component {
     const {
       currentRedis,
       currentKey,
-      currentIndex,
       searchKey,
     } = this.state
     const res = await ipc.redisExec(currentRedis, 'del', [currentKey])
