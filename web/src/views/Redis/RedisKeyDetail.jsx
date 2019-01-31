@@ -11,7 +11,9 @@ export default WithRedis(class RedisKey extends React.Component {
     const {
       currentData,
     } = this.props.data
-    
+    if (!currentData) {
+      return 
+    }
     const columns = [{
       title: 'Key',
       dataIndex: 'key',
@@ -49,10 +51,8 @@ export default WithRedis(class RedisKey extends React.Component {
   
   renderString() {
     const {
-      currentKey,
       currentData,
-      currentRedis,
-      ipcUpdateRedisStringKey,
+      ipcSetStringKey,
       updateState,
     } = this.props.data
     
@@ -65,7 +65,7 @@ export default WithRedis(class RedisKey extends React.Component {
           className="redis-data-value"
           value={currentData} />
         <Button
-          onClick={() => ipcUpdateRedisStringKey()}
+          onClick={() => ipcSetStringKey()}
           type="primary">
           Save
         </Button>
@@ -91,10 +91,9 @@ export default WithRedis(class RedisKey extends React.Component {
       currentKey,
       currentType,
       currentTTL,
-      isAddData,
-      addData,
       ipcDeleteRedisKey,
       updateState,
+      isAddData,
     } = this.props.data
 
     return (
@@ -104,6 +103,7 @@ export default WithRedis(class RedisKey extends React.Component {
           <div className="line-1">
             <InputGroup compact>
               <Select
+                disabled={!isAddData}
                 onSelect={currentType => updateState({
                   currentType,
                 })}
@@ -117,8 +117,11 @@ export default WithRedis(class RedisKey extends React.Component {
                 <Option value="zset">ZSet</Option>
               </Select>
               <Input
+                disabled={!isAddData}
                 placeholder="Redis Key"
-                onChange={e => updateState('currentKey', e.target.value)}
+                onChange={e => updateState({
+                  currentKey: e.target.value
+                })}
                 style={{width: "30%"}}
                 value={currentKey}
               />
@@ -132,7 +135,7 @@ export default WithRedis(class RedisKey extends React.Component {
               />
               
               <ButtonGroup style={{width: "40%"}}>
-                <Button type="danger" onClick={() => ipcDeleteRedisKey(currentRedis, currentKey)}>Delete</Button>
+                <Button type="danger" onClick={() => ipcDeleteRedisKey()}>Delete</Button>
                 <Button type="primary">Rename</Button>
                 <Button type="primary">Reload</Button>
                 <Button type="primary">Set TTL</Button>

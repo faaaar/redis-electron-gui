@@ -28,11 +28,11 @@ export default WithRedis(class  extends React.Component {
     return (
       <React.Fragment>
         <Select
-          value={this.props.data.selectedRedis}
+          value={this.props.data.currentRedis}
           placeholder='Select a redis'
           style={{ width: "100%" }}
-          onChange={selectedRedis => this.props.data.updateState({
-            selectedRedis,
+          onChange={currentRedis => this.props.data.updateState({
+            currentRedis,
           })}
         >
           {
@@ -48,7 +48,10 @@ export default WithRedis(class  extends React.Component {
   renderRedisSearch() {
     return (
       <Search
-        defaultValue={this.props.data.searchKey}
+        onChange={e => this.props.data.updateState({
+          searchKey: e.target.value,
+        })}
+        value={this.props.data.searchKey}
         placeholder="input search text"
         onSearch={value => this.props.data.ipcSearchRedis(value)}
         enterButton

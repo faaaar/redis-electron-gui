@@ -4,8 +4,8 @@ const redis = require('../redis')
 
 module.exports = function() {
   ipcMain.on(`request_${EVENTS.COMMAND}`, (e, params) => {
+    console.log(params, "-----------")
     redis.Command(params, function(error, data) {
-      console.log(params, data)
       e.sender.send(`response_${EVENTS.COMMAND}`, {
         data,
         error,

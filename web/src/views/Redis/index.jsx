@@ -5,7 +5,6 @@ import OptionPanel from './OptionPanel'
 import { Provider } from './context' 
 import ipc from '../../request/ipc'
 import EVENTS from '../../request/events'
-
 import './index.scss'
 
 export default class extends React.Component {
@@ -14,11 +13,12 @@ export default class extends React.Component {
     this.state = {
       config: [],
 
-      selectedRedis: 'work_test', 
+      currentRedis: 'work_test', 
 
       searchKey: 'lyf_*',
       searchData: [],
 
+      currentIndex: -1,
       currentKey: '',
       currentData: null,
       currentType: '',     
@@ -27,24 +27,21 @@ export default class extends React.Component {
       isAddData: false,
       
       ipcSearchRedis: this.ipcSearchRedis.bind(this),
-      ipcUpdateRedisStringKey: this.ipcUpdateRedisStringKey.bind(this),
+      ipcSetStringKey: this.ipcSetStringKey.bind(this),
       ipcDeleteRedisKey: this.ipcDeleteRedisKey.bind(this),
       ipcGetDataType: this.ipcGetDataType.bind(this),
       ipcGetData: this.ipcGetData.bind(this),
       updateState: this.updateState.bind(this),
       updateIsAddStatus: this.updateIsAddStatus.bind(this),
+      resetCurrent: this.resetCurrent.bind(this),
     }
   }
   
   updateIsAddStatus(isAddData) {
     if (isAddData) {
-      this.state.updateState({
+      this.resetCurrent({
         isAddData,
-        currentKey: '',
-        currentData: '',
-        currentType: 'string',     
-        currentTTL: -1,
-      })      
+      })
     } else {
       this.state.updateState({
         isAddData,
@@ -54,6 +51,17 @@ export default class extends React.Component {
 
   updateState(nextState) {
     this.setState(nextState)
+  }
+
+  resetCurrent(extend) {
+    this.state.updateState({
+      currentKey: '',
+      currentData: '',
+      currentType: 'string',     
+      currentTTL: -1,
+      currentIndex: -1,
+      ...extend,
+    })
   }
 
   async componentDidMount() {
@@ -66,28 +74,45 @@ export default class extends React.Component {
     })
   }
 
-  async ipcUpdateRedisStringKey() {
+  async ipcSetStringKey() {
     const {
-      selectedRedis,
+      currentRedis,
       currentKey,
       currentData,
+      searchKey,
     } = this.state
-    const res = await ipc.redisExec(selectedRedis, 'set', [currentKey, currentData])
+    const res = await ipc.redisExec(currentRedis, 'set', [currentKey, currentData])
 
-    alert(res)
+    if (res) {
+      await this.state.ipcSearchRedis(searchKey)
+    }
+
+    this.state.updateState({
+      isAddData: false,
+    })
   }
 
-  async ipcDeleteRedisKey(redis, key) {
-    const res = await ipc.redisExec(redis, 'del', [key])
-
-    if (res === 1) {
-
+  async ipcDeleteRedisKey() {
+    const {
+      currentRedis,
+      currentKey,
+      currentIndex,
+      searchKey,
+    } = this.state
+    const res = await ipc.redisExec(currentRedis, 'del', [currentKey])
+    if (res > 0) {
+      await this.state.ipcSearchRedis(searchKey)
+      this.state.updateState({
+        currentData: null,
+        currentKey: '',
+        currentType: '',
+        currentTTL: '',
+      })
     }
-    alert(res)
   }
 
   async ipcGetData(type, keys) {
-    const selectedRedis = this.state.selectedRedis
+    const currentRedis = this.state.currentRedis
     const dataType = await this.state.ipcGetDataType(keys)
 
     let cmd = ''
@@ -103,32 +128,32 @@ export default class extends React.Component {
         break
     }
 
-    if (cmd == '') {
+    if (cmd === '') {
       return false
     }
     
-    const data = await ipc.redisExec(selectedRedis, cmd, keys)
+    const data = await ipc.redisExec(currentRedis, cmd, keys)
     
     return data
   }
 
   async ipcGetDataType(keys) {
-    const selectedRedis = this.state.selectedRedis
-    const dataType = await ipc.redisExec(selectedRedis, 'type', keys)
+    const currentRedis = this.state.currentRedis
+    const dataType = await ipc.redisExec(currentRedis, 'type', keys)
     
     return dataType
   }
- 
+  
 
   async ipcSearchRedis(searchKey) {
-    const selectedRedis = this.state.selectedRedis
+    const currentRedis = this.state.currentRedis
 
-    if (!selectedRedis) {
+    if (!currentRedis) {
       alert('请选择redis')
       return
     }
     
-    const searchData = await ipc.redisExec(selectedRedis, 'keys', [searchKey])
+    const searchData = await ipc.redisExec(currentRedis, 'keys', [searchKey])
 
     this.state.updateState({
       searchData,

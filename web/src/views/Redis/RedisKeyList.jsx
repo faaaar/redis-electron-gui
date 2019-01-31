@@ -12,13 +12,13 @@ export default WithRedis(class RedisKey extends React.Component {
     }
 
     const {
-      selectedRedis,
+      currentRedis,
       ipcGetDataType,
       ipcGetData,
       updateState,
     } = this.props.data
     
-    if (!selectedRedis) {
+    if (!currentRedis) {
       alert('请选择redis')
       return
     }
@@ -34,6 +34,8 @@ export default WithRedis(class RedisKey extends React.Component {
     }
     
     updateState({
+      currentIndex: tree.node.props.index,
+      isAddData: false,
       currentKey: keys[0],
       currentData: currentData,
       currentType: dataType,
@@ -42,8 +44,8 @@ export default WithRedis(class RedisKey extends React.Component {
 
   
   render() {
-    const selectedRedis = this.props.data.selectedRedis
-    if(!selectedRedis) {
+    const currentRedis = this.props.data.currentRedis
+    if(!currentRedis) {
       return <div />
     }
 
@@ -58,8 +60,8 @@ export default WithRedis(class RedisKey extends React.Component {
         >
           <TreeNode isLeaf={false} title="ROOT">
             {
-              searchData.map(v => (
-                <TreeNode isLeaf key={v} title={v} />
+              searchData.map((v, i) => (
+                <TreeNode isLeaf key={v} title={v} index={i} />
               ))
             }
           </TreeNode>
