@@ -1,13 +1,19 @@
 import 'react-app-polyfill/jsdom'
 import React from 'react'
 import ReactDOM from 'react-dom'
+import {Provider} from 'react-redux'
 import { Layout, } from 'antd';
 import {
   BrowserRouter,
   Route,
   Switch,
 } from 'react-router-dom'
-import RedisView from './views/Redis' 
+import store from './store'
+
+import ConnView from './views/ConnView' 
+import DataView from './views/DataView'
+import DevTools from './views/DevTools'
+
 import * as serviceWorker from './serviceWorker'
 import './index.scss'
 
@@ -26,12 +32,16 @@ class App extends React.Component {
   }
   
   render() {
+    let devTool = process.env.NODE_ENV === 'production' ? '' :  (<div style={{fontSize: '18px'}}><DevTools /></div>)
+    
     return (
-      <BrowserRouter basename="/"> 
-        <div className="app"> 
-          <Layout>
+      <BrowserRouter basename="/">
+        <div className="app">
+          {devTool}
+          <Layout> 
             <Switch>
-              <Route exact={true} path="/" component={RedisView} />
+              <Route exact={true} path="/" component={ConnView} />
+              <Route exact={true} path="/view" component={DataView} />
             </Switch>
           </Layout>
         </div>
@@ -41,7 +51,9 @@ class App extends React.Component {
 }
 
 ReactDOM.render(
-  <App />,
+  <Provider store={store}>
+    <App />
+  </Provider>,
   document.getElementById('app-root'),
 )
 
@@ -49,4 +61,3 @@ ReactDOM.render(
 // unregister() to register() below. Note this comes with some pitfalls.
 // Learn more about service workers: http://bit.ly/CRA-PWA
 serviceWorker.unregister()
-

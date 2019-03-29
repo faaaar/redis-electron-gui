@@ -16,7 +16,7 @@
 
   .option-list {
     display: flex;
-    flex-flow: column nowrap;
+    flex-flow: row nowrap;
   }
 
   .option-item {
@@ -44,7 +44,7 @@
   flex-flow: row nowrap;
   justify-content: space-between;
   flex: 1;
-
+  .redis-field-detail,
   .redis-key-detail {
     // display: flex;
     // flex-flow: column nowrap;

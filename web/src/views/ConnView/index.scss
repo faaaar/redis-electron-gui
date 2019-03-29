@@ -1,0 +1,30 @@
+.conn-view {
+  height: 100%;
+  width: 100%;
+
+  .container {
+    height: 100%;
+
+    .save-conn {
+      height: 100%;
+    }
+
+    .config-panel {
+      background-color: green;
+      height: 100%;
+    }
+  }
+
+  .save-conn {
+    .list-header {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 32px;
+    }
+  }
+
+  .config-panel {
+
+  }
+}

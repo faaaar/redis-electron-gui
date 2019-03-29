@@ -7,45 +7,110 @@ const InputGroup = Input.Group
 const Option = Select.Option
 
 export default WithRedis(class RedisKey extends React.Component {
+  changeEditCurrentEditData
+  
+  onSaveCurrentStatus(field) {
+    const ipcSetHashKey = this.props.data.ipcSetHashKey
+
+    ipcSetHashKey(field)
+  }
+
+  onChangeEditData(field, value) {
+    const currentEditData = this.props.data.currentEditData
+
+    currentEditData[field] = value
+    this.props.data.updateState({
+      currentEditData
+    })
+  }
+  
+  onChangeEditStatus(field) {
+    const currentEditStatus = this.props.data.currentEditStatus || {}
+
+    currentEditStatus[field] = true
+    this.props.data.updateState({
+      currentEditStatus, 
+    })
+  }
+  
   renderHash() {
-    const {
-      currentData,
-    } = this.props.data
-    if (!currentData) {
-      return 
-    }
+    const currentData = this.props.data.currentData || {}
+    const currentEditStatus = this.props.data.currentEditStatus || {}
+    const ipcSetHashKey = this.props.data.ipcSetHashKey
+    
     const columns = [{
       title: 'Key',
-      dataIndex: 'key',
-      key: 'key',
+      dataIndex: 'field',
+      key: 'field',
     }, {
       title: 'Value',
       dataIndex: 'value',
       key: 'value',
+      render: (text, record) => {
+        const field = record.field 
+        
+        return currentEditStatus[field] ? <Input onChange={e => this.onChangeEditData(field, e.target.value)} value={currentData[field]} /> : text
+      }
     }, {
       title: 'Actions',
-      key: 'actions',
+      field: 'actions',
       width: 200,
-      render: (text, record, index) => {
+      render: (text, record) => {
+        const buttonList = []
+        const field = record.field
+        
+        buttonList.push(
+          <Button
+            key={`J_btn_del_${field}`}
+            type="danger"
+          >
+            Delete
+          </Button>
+        )
+        if (currentEditStatus[record.field]) {
+          buttonList.push(
+            <Button
+              key={`J_btn_save_${field}`}
+              type="primary"
+              onClick={() => ipcSetHashKey(field)}
+            >
+              Save
+            </Button>
+          )
+        } else {
+          buttonList.push(
+            <Button
+              key={`J_btn_edit_${field}`}
+              type="primary"
+              onClick={() => this.onChangeEditStatus(field)}
+            >
+              Edit
+            </Button>
+          )
+        }
         return (
           <ButtonGroup>
-            <Button type="danger">Delete</Button>
-            <Button type="primary">Edit</Button>
+            {buttonList}
           </ButtonGroup>
         )
       }
     }]
-    const dataSource = Object.keys(currentData).map(key => ({key, value: currentData[key]}) )
+    const dataSource = Object.keys(currentData).map(field => ({key:field, field, value: currentData[field]}) )
     
     return (
-      <Table
-        pagination={{
-          hideOnSinglePage: true,
-        }}
-        style={{marginTop: 24}}
-        dataSource={dataSource}
-        columns={columns}
-      />
+      <React.Fragment>
+        <Table
+          pagination={{
+            hideOnSinglePage: true,
+          }}
+          style={{marginTop: 24}}
+          dataSource={dataSource}
+          columns={columns}
+        />
+        <ButtonGroup>
+          <Button type="primary">Add New Item</Button>
+        </ButtonGroup>
+      </React.Fragment>
     )
   }
   
@@ -165,7 +230,7 @@ export default WithRedis(class RedisKey extends React.Component {
     }
     
     return(
-      <div className='redis-key-detail'>
+      <div className='redis-field-detail'>
         {this.renderHeader()}
         {renderFunc()}
       </div>

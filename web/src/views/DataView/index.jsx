@@ -13,14 +13,16 @@ export default class extends React.Component {
     this.state = {
       config: [],
 
-      currentRedis: 'work_test', 
+      currentRedis: 'default', 
 
-      searchKey: 'lyf_*',
+      searchKey: '*',
       searchData: [],
 
       currentIndex: -1,
       currentKey: '',
       currentData: null,
+      currentEditData: null,
+      currentEditStatus: null,
       currentType: '',     
       currentTtl: -1,
       
@@ -28,6 +30,7 @@ export default class extends React.Component {
       
       ipcSearchRedis: this.ipcSearchRedis.bind(this),
       ipcSetStringKey: this.ipcSetStringKey.bind(this),
+      ipcSetHashKey: this.ipcSetHashKey.bind(this),
       ipcDeleteRedisKey: this.ipcDeleteRedisKey.bind(this),
       ipcGetDataType: this.ipcGetDataType.bind(this),
       ipcGetData: this.ipcGetData.bind(this),
@@ -72,6 +75,30 @@ export default class extends React.Component {
     this.setState({
       config,
     })
+  }
+
+  async ipcSetHashKey(field) {
+    const {
+      currentRedis,
+      currentKey,
+      currentEditData,
+      currentData,
+      currentEditStatus,
+    } = this.state
+
+    await ipc.redisExec(currentRedis, 'hset', [currentKey, field, currentEditData[field]])
+    const fieldValue = await ipc.redisExec(currentRedis, 'hget', [currentKey, field])
+
+    if (fieldValue !== false) {
+      currentData[field] = fieldValue
+      currentEditData[field] = fieldValue
+      delete currentEditStatus[field]
+      
+      this.state.updateState({
+        currentEditStatus,
+        currentData,
+      })
+    }
   }
 
   async ipcSetStringKey() {

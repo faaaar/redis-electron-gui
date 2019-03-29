@@ -39,6 +39,8 @@ export default WithRedis(class RedisKey extends React.Component {
       currentKey: keys[0],
       currentData: currentData,
       currentType: dataType,
+      currentEditData: currentData,
+      currentEditStatus: null,
     })
   }
 
