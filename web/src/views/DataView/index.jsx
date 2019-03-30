@@ -188,17 +188,18 @@ export default class extends React.Component {
   
   render() {    
     return (
-      <Provider value={this.state}>
-        <div className='app-redis'>
-          <div className='app-redis-option-panel'>
-            <OptionPanel />
-            <RedisKeyList />
-          </div>
-          <div className='app-redis-data-panel'>
-            <RedisKeyDetail />
-          </div>
-        </div>
-      </Provider>
+      <h1>Hi</h1>
+      // <Provider value={this.state}>
+      //   <div className='app-redis'>
+      //     <div className='app-redis-option-panel'>
+      //       <OptionPanel />
+      //       <RedisKeyList />
+      //     </div>
+      //     <div className='app-redis-data-panel'>
+      //       <RedisKeyDetail />
+      //     </div>
+      //   </div>
+      // </Provider>
     )
   }
 }

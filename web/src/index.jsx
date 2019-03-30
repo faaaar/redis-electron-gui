@@ -1,14 +1,25 @@
 import 'react-app-polyfill/jsdom'
 import React from 'react'
 import ReactDOM from 'react-dom'
-import {Provider} from 'react-redux'
-import { Layout, } from 'antd';
+import {Provider, connect} from 'react-redux'
+import { Layout, Tabs } from 'antd';
 import {
   BrowserRouter,
   Route,
   Switch,
 } from 'react-router-dom'
+import {
+  withRouter,
+} from 'react-router'
 import store from './store'
+
+import {
+  DisconnectRedis,
+} from './actions/redis'
+
+import {
+  GetConnectConfig,
+} from './actions/global'
 
 import ConnView from './views/ConnView' 
 import DataView from './views/DataView'
@@ -16,6 +27,56 @@ import DevTools from './views/DevTools'
 
 import * as serviceWorker from './serviceWorker'
 import './index.scss'
+
+const TabPane = Tabs.TabPane
+const {
+  Header,
+  Content,
+} = Layout
+
+const AppTabs = withRouter(connect(state => ({
+  redis: state.redis
+}))(
+  class extends React.Component {
+    componentDidMount() {
+      this.props.history.replace('/')
+    }
+    
+    onTabChange(key) {
+      if (key === '/') {
+        this.props.history.push("/")
+      } else {
+        this.props.history.push(`/view/${key}`)
+      }
+    }
+
+    onEditTabs(key, actions) {
+      if (actions === 'remove'&& key !== '/') {
+        DisconnectRedis(key)
+      }
+    }
+    
+    render() {
+      return (
+        <Tabs
+          hideAdd={true}
+          onEdit={(key, action) => this.onEditTabs(key, action)}
+          type="editable-card"
+          className="app-tabs"
+          defaultActiveKey="/"
+          onChange={key => this.onTabChange(key)}
+        >
+          <TabPane className="tab-item" tab="Config" key="/" />
+          {
+            this.props.redis.connInfo.map(conn => (
+              <TabPane className="tab-item" tab={conn.alias} key={`${conn.id}`} />
+            ))
+          }
+        </Tabs>
+      )
+    }
+  }
+))
 
 class App extends React.Component {
   constructor(props) {
@@ -25,24 +86,27 @@ class App extends React.Component {
     }
   }
   
-  handleClick = e => {
-    this.setState({
-      current: e.key,
-    })
+  componentDidMount() {
+    GetConnectConfig()
   }
   
   render() {
     let devTool = process.env.NODE_ENV === 'production' ? '' :  (<div style={{fontSize: '18px'}}><DevTools /></div>)
-    
+
     return (
       <BrowserRouter basename="/">
         <div className="app">
           {devTool}
-          <Layout> 
-            <Switch>
-              <Route exact={true} path="/" component={ConnView} />
-              <Route exact={true} path="/view" component={DataView} />
-            </Switch>
+          <Layout className="app-layout">
+            <Header className="app-header">
+              <AppTabs />
+            </Header>
+            <Content className="app-content">
+              <Switch>
+                <Route exact={true} path="/" component={ConnView} />
+                <Route exact={true} path="/view/:id" component={DataView} />
+              </Switch>
+            </Content>
           </Layout>
         </div>
       </BrowserRouter>

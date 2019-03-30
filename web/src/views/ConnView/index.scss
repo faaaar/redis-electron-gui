@@ -1,30 +1,70 @@
 .conn-view {
-  height: 100%;
+  flex: 1;
   width: 100%;
 
   .container {
     height: 100%;
-
-    .save-conn {
-      height: 100%;
-    }
-
-    .config-panel {
-      background-color: green;
-      height: 100%;
-    }
   }
 
-  .save-conn {
+  .favorite-conn {
+    height: 100%;
+  }
+
+  .tree {
+    height: 100%;
+    display: flex;
+    flex-flow: column nowrap;
+
+    .conn-list {
+      flex: 1;
+      display: flex;
+      flex-flow: column nowrap;
+      overflow-y: scroll;
+    }
+    
     .list-header {
       display: flex;
-      justify-content: center;
       align-items: center;
       height: 32px;
+      justify-content: center;
+      background-color: #ddd;
+    }
+
+    .list-item {
+      &:hover {
+        background-color: #ddd;
+      }
+
+      cursor: pointer;
+    }
+
+    .list-selected {
+      background-color: #ccc;
     }
   }
 
-  .config-panel {
 
+
+  .config-panel {
+    display: flex;
+    height: 100%;
+    background-color: #ddd;
+    justify-content: center;
+    align-content: center;
+    
+    .config-form {
+      background-color:#ccc;
+      padding: 32px;
+      margin: 60px 0 auto;
+      width: 564px;
+    }
+
+    .btn-group {
+      display: flex;
+    }
+    
+    .form-btn button {
+      flex: 1;
+    }
   }
 }

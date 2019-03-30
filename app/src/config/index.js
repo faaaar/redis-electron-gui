@@ -2,49 +2,46 @@ const electron = require('electron')
 const fs = require('fs')
 const ini = require('ini')
 
-let config = {
-  connect: {
-    default: {
-      host: '127.0.0.1',
-      port: '6379',
-      auth: '',
-    },
-  },
-}
+let connectConfig = {}
+let appConfig = {}
 
-const Set = function(key, value) {
-  if (!key) {
-    return false
-  }
+const AppConfigFilePath  = () => electron.app.getPath('userData') + "/redis_config.ini"
+const ConnectConfigFilePath  = () => electron.app.getPath('userData') + "/redis_connect.ini"
 
-  eval('config.'+key+'='+value)
-
-  return true
-}
-
-const Get = function(key) {
-  if (!key) {
-    return config
-  }
+const GetRedisConnectConfig = function(callback) {
+  const filePath = ConnectConfigFilePath()
   
-  return eval('config.'+key)
-}
-
-const Init = function(callback) {
-  const userHome = electron.app.getPath('userData')
-  const configFile = userHome + '/redis_config.ini'
-
-  if (fs.existsSync(configFile)) {
-    config = ini.parse(fs.readFileSync(configFile, 'utf-8'))    
+  if (fs.existsSync(filePath)) {
+    connectConfig = ini.parse(fs.readFileSync(filePath, 'utf-8'))    
   } else {
-    fs.writeFileSync(configFile, ini.stringify(config, {section: ''}))
+    fs.writeFileSync(filePath, ini.stringify(connectConfig, {section: ''}))
   }
   
-  callback(null, config) 
+  callback(null, connectConfig) 
+}
+
+const AddRedisConnectConfig = function(newConfig, callback) {
+  const filePath = ConnectConfigFilePath()
+  const alias = newConfig.alias
+  
+  delete newConfig.alias
+  connectConfig[alias] = newConfig
+  fs.writeFileSync(filePath, ini.stringify(connectConfig, { section: '' }))
+  
+  callback(null, connectConfig)
+}
+
+const DelRedisConnectConfig = function(alias, callback) {
+  const filePath = ConnectConfigFilePath()
+  
+  delete connectConfig[alias]
+  fs.writeFileSync(filePath, ini.stringify(connectConfig, { section: '' }))
+  
+  callback(null, connectConfig)
 }
 
 module.exports = {
-  Init,
-  Get,
-  Set,
+  GetRedisConnectConfig,
+  AddRedisConnectConfig,
+  DelRedisConnectConfig,
 }

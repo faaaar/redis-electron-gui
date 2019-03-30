@@ -6,7 +6,9 @@ const ipc = {
     const {
       type,
       data,
-    } = args  
+    } = args
+
+    console.log("send type data", type ,data)
     
     return new Promise((resolve, reject) => {
       ipc.responseOnce(type, (e, response) => {
@@ -20,17 +22,22 @@ const ipc = {
       ipcRenderer.send(`request_${type}`, data)
     })  
   },
-  redisExec: async (client, cmd, params) => {
+  redisExec: async (connInfo, cmd, params) => {
     if (!cmd) {
       return
     }
+
+    if (!params) {
+      params = []
+    }
+    
     try {
       const data = await ipc.send({
         type: EVENTS.COMMAND,
         data: {
           cmd,
           params,
-          client,
+          connInfo,
         },
       })
 

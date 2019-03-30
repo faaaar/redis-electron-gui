@@ -14,10 +14,6 @@ export default WithRedis(class  extends React.Component {
     }
   }
 
-  handleChange(value) {
-    console.log(`selected ${value}`);
-  }
-
   renderRedisList() {
     const redisConnect = this.props.data.config.connect
 
