@@ -5,6 +5,16 @@ import EVENTS from '../request/events'
 export const GET_APP_CONFIG = 'GET_APP_CONFIG'
 export const GET_CONNECT_CONFIG = 'GET_CONNECT_CONFIG'
 export const UPDATE_CONNECT_CONFIG = 'UPDATE_CONNECT_CONFIG'
+export const SWITCH_TABS = 'SWITCH_TABS'
+
+export const SwitchTabs = activeTabKey => {
+  const dispatch = store.dispatch
+  
+  dispatch({
+    type: SWITCH_TABS,
+    activeTabKey,
+  })
+}
 
 export const GetAppConfig = async () => {
   const dispatch = store.dispatch

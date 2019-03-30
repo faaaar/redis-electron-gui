@@ -7,7 +7,10 @@ const Connect = function(connInfo, callback) {
   const obj = {
     host: connInfo.host,
     no_ready_check: true,
-    password: connInfo.auth,
+  }
+
+  if (connInfo.auth) {
+    obj.password = connInfo.auth
   }
   
   client = redis.createClient(obj)

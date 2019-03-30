@@ -19,6 +19,7 @@ import {
 
 import {
   GetConnectConfig,
+  SwitchTabs,
 } from './actions/global'
 
 import ConnView from './views/ConnView' 
@@ -35,7 +36,8 @@ const {
 } = Layout
 
 const AppTabs = withRouter(connect(state => ({
-  redis: state.redis
+  redis: state.redis,
+  global: state.global,
 }))(
   class extends React.Component {
     componentDidMount() {
@@ -48,6 +50,8 @@ const AppTabs = withRouter(connect(state => ({
       } else {
         this.props.history.push(`/view/${key}`)
       }
+
+      SwitchTabs(key)
     }
 
     onEditTabs(key, actions) {
@@ -57,13 +61,15 @@ const AppTabs = withRouter(connect(state => ({
     }
     
     render() {
+      const activeTabKey = this.props.global.activeTabKey
+
       return (
         <Tabs
+          activeKey={activeTabKey}
           hideAdd={true}
           onEdit={(key, action) => this.onEditTabs(key, action)}
           type="editable-card"
           className="app-tabs"
-          defaultActiveKey="/"
           onChange={key => this.onTabChange(key)}
         >
           <TabPane className="tab-item" tab="Config" key="/" />

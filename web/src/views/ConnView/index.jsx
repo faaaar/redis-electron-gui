@@ -1,4 +1,5 @@
 import React from 'react'
+import {withRouter} from 'react-router'
 import { connect } from 'react-redux'
 import {
   Row,
@@ -61,7 +62,9 @@ class ConnView extends  React.Component {
     e.preventDefault();
     this.props.form.validateFieldsAndScroll(err => {
       if (!err) {
-        ConnectToRedis({...this.props.form.getFieldsValue()})
+        ConnectToRedis({...this.props.form.getFieldsValue()}, id => {
+          this.props.history.push('/view/' + id)
+        })
       }
     });
   }
@@ -253,7 +256,7 @@ const WrappedConnView = Form.create({
   name: 'horizontal_login',
 })(ConnView);
 
-export default connect(state => ({
+export default withRouter(connect(state => ({
   global: state.global,
   redis: state.redis,
-}))(WrappedConnView)
+}))(WrappedConnView))

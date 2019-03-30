@@ -1,10 +1,13 @@
 import store from '../store'
 import ipc from '../request/ipc'
+import {
+  SwitchTabs,
+} from './global'
 
 export const REDIS_CONNECT = 'REDIS_CONNECT'
 export const REDIS_DISCONNECT = 'REDIS_DISCONNECT'
 
-export const ConnectToRedis = async (newConnInfo) => {
+export const ConnectToRedis = async (newConnInfo, callback) => {
   const dispatch = store.dispatch
   const connInfo = store.getState().redis.connInfo
   newConnInfo.auth = newConnInfo.auth || ''
@@ -14,11 +17,14 @@ export const ConnectToRedis = async (newConnInfo) => {
 
   if (pong === 'PONG')  {
     connInfo.push(newConnInfo)
-    
+
     dispatch({
       type: REDIS_CONNECT,
       connInfo,
-    })     
+    })
+    
+    SwitchTabs(newConnInfo.id)
+    callback(newConnInfo.id)
   }
 }
 
