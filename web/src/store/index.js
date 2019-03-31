@@ -2,6 +2,9 @@ import {createStore, applyMiddleware, compose} from 'redux'
 import reducer from '../reducers'
 import thunk from 'redux-thunk'
 import DevTools from '../views/DevTools'
+import {
+  withRouter,
+} from 'react-router'
 
 var enhancer = null
 
@@ -22,7 +25,7 @@ const initState = {}
 let store = createStore(
   reducer,
   initState,
-  enhancer, 
+  enhancer,
 )
 
 export default store

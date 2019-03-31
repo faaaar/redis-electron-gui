@@ -133,7 +133,7 @@ class ConnView extends  React.Component {
   renderSaveBtn() {
     const connectConfig = this.getConnectConfig()
     const alias = this.props.form.getFieldValue("alias")
-    const disabledChangeBtn = !connectConfig[alias]
+    const disabledChangeBtn = alias == "" || connectConfig[alias]
     
     return (
       <Button

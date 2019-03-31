@@ -1,0 +1,56 @@
+.data-view {
+  flex: 1;
+
+  .container,
+  .key-tree,
+  .key-detail {
+    display: flex;
+    height: 100%;
+  }
+}
+
+.key-tree {
+  height: 100%;
+  flex-flow: column nowrap;
+  display: flex;
+  
+  .key-list {
+    flex: 1;
+    display: flex; 
+    flex-flow: column nowrap;
+    overflow-y: scroll;
+  }
+  
+  .list-header {
+    display: flex;
+    align-items: center;
+    height: 32px;
+    justify-content: center;
+    background-color: #ddd;
+  }
+
+  .list-item {
+    &:hover {
+      background-color: #ddd;
+    }
+
+    cursor: pointer;
+  }
+
+  .list-selected {
+    background-color: #ccc;
+  }
+}
+
+.key-detail {
+  background:green;
+
+  .key-fields {
+    height: 100%;
+    background: yellow;
+  }
+
+  .fields-value {
+    height: 100%;
+  }
+}

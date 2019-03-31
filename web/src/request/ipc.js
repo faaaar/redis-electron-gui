@@ -22,31 +22,6 @@ const ipc = {
       ipcRenderer.send(`request_${type}`, data)
     })  
   },
-  redisExec: async (connInfo, cmd, params) => {
-    if (!cmd) {
-      return
-    }
-
-    if (!params) {
-      params = []
-    }
-    
-    try {
-      const data = await ipc.send({
-        type: EVENTS.COMMAND,
-        data: {
-          cmd,
-          params,
-          connInfo,
-        },
-      })
-
-      return data
-    } catch (error) {
-      alert(error)
-      return error
-    }
-  },
   responseOnce: (type, callback) => {
     ipcRenderer.once(`response_${type}`, callback)
   },

@@ -29,6 +29,8 @@ import DevTools from './views/DevTools'
 import * as serviceWorker from './serviceWorker'
 import './index.scss'
 
+import ioredis from 'ioredis'
+
 const TabPane = Tabs.TabPane
 const {
   Header,
@@ -55,8 +57,13 @@ const AppTabs = withRouter(connect(state => ({
     }
 
     onEditTabs(key, actions) {
+      const activeTabKey = this.props.global.activeTabKey
+
       if (actions === 'remove'&& key !== '/') {
         DisconnectRedis(key)
+
+        this.props.history.push('/')
+        SwitchTabs('/')
       }
     }
     
@@ -74,8 +81,8 @@ const AppTabs = withRouter(connect(state => ({
         >
           <TabPane className="tab-item" tab="Config" key="/" />
           {
-            this.props.redis.connInfo.map(conn => (
-              <TabPane className="tab-item" tab={conn.alias} key={`${conn.id}`} />
+            this.props.redis.connInfo.map((conn, i) => (
+              <TabPane className="tab-item" tab={conn.alias} key={i} />
             ))
           }
         </Tabs>
