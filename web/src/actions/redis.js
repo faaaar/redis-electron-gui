@@ -8,28 +8,28 @@ import {
 export const REDIS_CONNECT = 'REDIS_CONNECT'
 export const REDIS_DISCONNECT = 'REDIS_DISCONNECT'
 export const REDIS_KEYS = 'REDIS_KEYS'
-export const REDIS_FILTER_KEYS = 'REDIS_FILTER_KEYS'
+export const REDIS_SCAN = 'REDIS_SCAN'
+export const REDIS_SEARCH_KEY_SET = 'REDIS_SEARCH_KEY_SET'
+export const REDIS_FILTER_KEY_SET = 'REDIS_FILTER_KEY_SET'
 
-const getConnInfoById = id => {
-  const ret = {
-    connInfo: null,
-    idx: -1,
-  }
-  
-  const allConnInfo = store.getState().redis.connInfo || []
-  const connInfos = allConnInfo.filter((v, i) => {
-    if (v.id === id) {
-      ret.idx = i
-    }
+export const SetFilterKey = (redisID, key) => {
+  const dispatch = store.dispatch
 
-    return v.id === id
-  }) || []
+  dispatch({
+    type: REDIS_FILTER_KEY_SET,
+    key,
+    redisID,
+  })
+}
 
-  if (connInfos.length) {
-    ret.connInfo = connInfos[0]
-  }
+export const SetSearchKey = (redisID, key) => {
+  const dispatch = store.dispatch
 
-  return ret
+  dispatch({
+    type: REDIS_SEARCH_KEY_SET,
+    key,
+    redisID,
+  })
 }
 
 export const ConnectToRedis = async (newConnInfo, callback) => {
@@ -89,31 +89,34 @@ export const GetKeysById = id => {
   return store.getState().redis.keys[id]
 }
 
-export const SearchRedisKeyByFilter = async filter => {
-  const dispatch = store.dispatch
-  const currentConnInfo = GetCurrentConnInfo()
-  const redis = currentConnInfo.redis
-  const stream = redis.scanStream({
-    match: filter,
-    count: 10000
-  });
+export const SearchKeys = async searchKey => {
+  return new Promise(resolve => {
+    const dispatch = store.dispatch
+    const currentConnInfo = GetCurrentConnInfo()
+    const redis = currentConnInfo.redis
+    const stream = redis.scanStream({
+      match: searchKey,
+      count: 10000
+    });
 
-  const keys = []
-  stream.on('data', function (resultKeys) {
-    stream.pause();
+    const keys = []
+    stream.on('data', function (resultKeys) {
+      stream.pause();
 
-    for (var i = 0; i < resultKeys.length; i++) {
-      keys.push(resultKeys[i])
-    }
-    
-    stream.resume(); 
-  });
+      for (var i = 0; i < resultKeys.length; i++) {
+        keys.push(resultKeys[i])
+      }
+      
+      stream.resume(); 
+    });
 
-  stream.on('end', function () {
-    dispatch({
-      type: REDIS_FILTER_KEYS,
-      redisID: currentConnInfo.id,
-      keys: Array.from(new Set(keys)),
+    stream.on('end', function () {
+      dispatch({
+        type: REDIS_SCAN,
+        redisID: currentConnInfo.id,
+        keys: Array.from(new Set(keys)),
+      })
+      resolve(true)
     })
   })
 }

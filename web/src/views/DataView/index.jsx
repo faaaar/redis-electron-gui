@@ -6,33 +6,41 @@ import {
   Input,
   List,
   Select,
-  Button,
+  Icon,
+  Tooltip,
 } from 'antd'
 
 import {
-  SearchRedisKeyByFilter,
+  SearchKeys,
+  SetFilterKey,
+  SetSearchKey,
 } from '../../actions/redis'
 
 import './index.scss'
 
 const Option = Select.Option
 
-let searchTicker = null
-
 class DataView extends React.Component {
   constructor(props) {
     super(props)
 
     this.state = {
-      filter: '*',
+      loading: false,
     }
   }
-  onFilterChanged(e) {
-    const filter = e.target.value
 
-    this.setState({
-      filter,
-    })
+  onFilterKeyChange(e) {
+    const connInfo = this.getRedisConnInfo()
+    const filterKey = e.target.value
+    
+    SetFilterKey(connInfo.id, filterKey)
+  }
+  
+  onSearchKeyChange(e) {
+    const connInfo = this.getRedisConnInfo()
+    const searchKey = e.target.value
+
+    SetSearchKey(connInfo.id, searchKey)
   }
   
   renderKeyListFooter() {
@@ -40,78 +48,118 @@ class DataView extends React.Component {
       <Row className="list-footer">
         <Col>
           <Select defaultValue="0">
-            <Option value="0">0</Option>
-            <Option value="1">1</Option>
-            <Option value="2">2</Option>
-            <Option value="3">3</Option>
-            <Option value="4">4</Option>
-            <Option value="5">5</Option>
-            <Option value="6">6</Option>
-            <Option value="7">7</Option>
-            <Option value="8">8</Option>
-            <Option value="9">9</Option>
-            <Option value="10">10</Option>
-            <Option value="11">11</Option>
-            <Option value="12">12</Option>
-            <Option value="13">13</Option>
-            <Option value="14">14</Option>
-            <Option value="15">15</Option>
-            <Option value="16">16</Option>
+            {
+              [0,1,2,3,4,5,6,7,8,9].map(i => <Option key={i} value={i}>{i}</Option>)
+            }
           </Select>
         </Col>
       </Row>
     )
   }
 
-  getRouterParam(key) {
-    return this.props.match.params[key]
+  async onClickToSearch() {
+    this.setState({
+      loading: true,
+    })
+    
+    await SearchKeys(this.getRedisSearchKey())
+
+    this.setState({
+      loading: false,
+    })
   }
 
-  onClickToSearch() {
-    SearchRedisKeyByFilter(this.state.filter)
+  getRedisConnInfo() {
+    const idx = this.props.match.params.id
+
+    return this.props.redis.connInfo[idx] || {}
+  }
+
+  getRedisSearchKey() {
+    const connInfo = this.getRedisConnInfo()
+    
+    return this.props.redis.searchKey[connInfo.id]
+  }
+
+  getRedisFilterKey() {
+    const connInfo = this.getRedisConnInfo()
+    
+    return this.props.redis.filterKey[connInfo.id]
+  }
+
+  getRedisKeys() {
+    const connInfo = this.getRedisConnInfo()
+    const filter = this.getRedisFilterKey() || ''
+    
+    let arr = (this.props.redis.keys[connInfo.id] || [])
+
+    const filterArray = filter.split(' ')
+
+    filterArray.forEach(filter => {
+      arr = this.fuzzyQuery(arr, filter)
+    })
+    
+    return arr.slice(0, 100)
+  }
+
+  fuzzyQuery(list, keyWord) {
+    var arr = [];
+    for (var i = 0; i < list.length; i++) {
+      if (list[i].match(keyWord) != null) {
+        arr.push(list[i]);
+      }
+    }
+    return arr;
   }
   
   renderKeyListHeader() {
+    const searchKey = this.getRedisSearchKey()
+    const filterKey = this.getRedisFilterKey()
+    
     return (
       <div className="list-header">
-        <Input
-          value={this.state.filter}
-          onChange={e => this.onFilterChanged(e)}
-          type="text"
-          placeholder="Key name, support regexp."
-        />
-        <Button
-          type="primary"
-          onClick={() => this.onClickToSearch()}
-        >
-          Search
-        </Button>
+        <div className="search">
+          <Input
+            value={searchKey}
+            onChange={e => this.onSearchKeyChange(e)}
+            type="text"
+            placeholder="Key name, support regexp."
+            prefix={<Icon type="search" />}
+            onPressEnter={() => this.onClickToSearch()}
+          />
+        </div>
+        <div className="filter">
+          <Input
+            value={filterKey}
+            onChange={e => this.onFilterKeyChange(e)}
+            type="text"
+            placeholder="Key name, support regexp."
+            prefix={<Icon type="filter" />}
+          />
+        </div>
       </div>
     )
   }
 
   renderKeyListItem(item) {
     return (
-      <List.Item className="list-item">
-        {item}
-      </List.Item>
+      <Tooltip mouseEnterDelay={0.5} title={item}>
+        <List.Item className="list-item">
+          {item}
+        </List.Item>
+      </Tooltip>
     )
   }
-  
+
   render() {
-    const data = [
-      'Racing car sprays burning fuel into crowd.',
-      'Japanese princess to wed commoner.',
-      'Australian walks 100km after outback crash.',
-      'Man charged over missing wedding girl.',
-      'Los Angeles battles huge wildfires.', 
-    ];
-    
+    const data = this.getRedisKeys()
+
     return (
       <div className="data-view">
         <Row className="container">
           <Col className="key-tree" span={6}>
             <List
+              loading={this.state.loading}
               className="key-list"
               size="small"
               header={this.renderKeyListHeader()}

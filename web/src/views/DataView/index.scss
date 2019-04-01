@@ -13,20 +13,38 @@
   height: 100%;
   flex-flow: column nowrap;
   display: flex;
-  
+
   .key-list {
     flex: 1;
     display: flex; 
     flex-flow: column nowrap;
-    overflow-y: scroll;
+    border-top: none;
+
+
   }
-  
+    .ant-spin-nested-loading {
+      overflow-y: scroll;
+      overflow-x: hidden;
+      height: 100%;
+    }  
   .list-header {
     display: flex;
+    flex-flow: column nowrap;
     align-items: center;
-    height: 32px;
     justify-content: center;
-    background-color: #ddd;
+
+    .search {
+      flex: 1;
+      display: flex;
+      width: 100%;
+      margin-bottom: 8px;
+    }
+
+    .filter{
+      flex: 1;
+      display: flex;
+      width: 100%;
+    }
   }
 
   .list-item {
@@ -35,6 +53,13 @@
     }
 
     cursor: pointer;
+
+    .ant-list-item-content {
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      display: block;
+      overflow: hidden
+    }
   }
 
   .list-selected {
