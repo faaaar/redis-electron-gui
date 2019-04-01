@@ -11,6 +11,7 @@ export const REDIS_KEYS = 'REDIS_KEYS'
 export const REDIS_SCAN = 'REDIS_SCAN'
 export const REDIS_SEARCH_KEY_SET = 'REDIS_SEARCH_KEY_SET'
 export const REDIS_FILTER_KEY_SET = 'REDIS_FILTER_KEY_SET'
+export const REDIS_KEY_DETAIL = 'REDIS_KEY_DETAIL'
 
 export const SetFilterKey = (redisID, key) => {
   const dispatch = store.dispatch
@@ -98,26 +99,73 @@ export const SearchKeys = async searchKey => {
       match: searchKey,
       count: 10000
     });
-
+    const pipeline = redis.pipeline()
     const keys = []
-    stream.on('data', function (resultKeys) {
+    stream.on('data', async resultKeys => {
       stream.pause();
 
       for (var i = 0; i < resultKeys.length; i++) {
-        keys.push(resultKeys[i])
+        keys.push({
+          key: resultKeys[i],
+          type: '',
+        })
+
+        pipeline.type(resultKeys[i])
       }
       
       stream.resume(); 
     });
 
-    stream.on('end', function () {
+    stream.on('end', async () => {
+      const typeList = await pipeline.exec()
+
+      for (var i = 0; i < keys.length; i++) {
+        keys[i]['type'] = typeList[i][1]
+      }
+      
       dispatch({
         type: REDIS_SCAN,
         redisID: currentConnInfo.id,
-        keys: Array.from(new Set(keys)),
+        keys,
       })
       resolve(true)
     })
+  })
+}
+
+export const SearchKeyDetail = async (idx, item) => {
+  const dispatch = store.dispatch
+  const {
+    key,
+    type
+  } = item
+  const redis = store.getState().redis.connInfo[idx].redis
+  let keyValue = []
+  
+  switch(type) {
+    case "string":
+      keyValue = await redis.get(key)
+      break
+    case "hash":
+      keyValue = await redis.hgetall(key)
+      break
+    case "list":
+      keyValue = await redis.lrange(key, 0, -1)
+      break
+    case "set":
+      keyValue = await redis.smembers(key)
+      break
+    case "zset":
+      keyValue = await redis.zrange(key, 0, -1, "WITHSCORES") 
+      break
+    default:
+      return
+  }
+
+  dispatch({
+    type: REDIS_KEY_DETAIL,
+    key,
+    keyValue,
   })
 }
 

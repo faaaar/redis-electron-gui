@@ -14,6 +14,7 @@ import {
   SearchKeys,
   SetFilterKey,
   SetSearchKey,
+  SearchKeyDetail,
 } from '../../actions/redis'
 
 import './index.scss'
@@ -105,7 +106,7 @@ class DataView extends React.Component {
   fuzzyQuery(list, keyWord) {
     var arr = [];
     for (var i = 0; i < list.length; i++) {
-      if (list[i].match(keyWord) != null) {
+      if (list[i].key.match(keyWord) != null) {
         arr.push(list[i]);
       }
     }
@@ -141,11 +142,22 @@ class DataView extends React.Component {
     )
   }
 
+  onClickListItem(e, item) {
+    const connInfo = this.getRedisConnInfo()
+    const idx = this.props.match.params.id
+    
+    SearchKeyDetail(idx, item)
+  }
+
   renderKeyListItem(item) {
     return (
-      <Tooltip mouseEnterDelay={0.5} title={item}>
-        <List.Item className="list-item">
-          {item}
+      <Tooltip mouseEnterDelay={0.5} title={item.key}>
+        <List.Item
+          className="list-item"
+          onClick={e => this.onClickListItem(e, item)}
+        >
+          <span className={`type ${item.type}`}>{item.type}</span>
+          <span className="key">{item.key}</span>
         </List.Item>
       </Tooltip>
     )

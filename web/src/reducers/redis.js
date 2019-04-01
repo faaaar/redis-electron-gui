@@ -4,6 +4,7 @@ import {
   REDIS_SCAN,
   REDIS_FILTER_KEY_SET,
   REDIS_SEARCH_KEY_SET,
+  REDIS_KEY_DETAIL,
 } from '../actions/redis'
 
 const initState = {
@@ -26,6 +27,10 @@ const initState = {
   filterKey: {
     // id: '',
   },
+  select: {
+    key: '',
+    value: []
+  }
 }
 
 export default (state = initState, action) => {
@@ -34,6 +39,7 @@ export default (state = initState, action) => {
     connInfo,
     keys,
     key,
+    keyValue,
     redisID,
   } = action
 
@@ -64,6 +70,13 @@ export default (state = initState, action) => {
       
       return Object.assign({}, state, {
         filterKey: filterKeyTmp
+      })
+    case REDIS_KEY_DETAIL:
+      return Object.assign({}, state, {
+        select: {
+          key,
+          keyValue,
+        }
       })
     default:
       return state

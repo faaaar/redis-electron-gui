@@ -22,11 +22,13 @@
 
 
   }
-    .ant-spin-nested-loading {
-      overflow-y: scroll;
-      overflow-x: hidden;
-      height: 100%;
-    }  
+  
+  .ant-spin-nested-loading {
+    overflow-y: scroll;
+    overflow-x: hidden;
+    height: 100%;
+  }
+  
   .list-header {
     display: flex;
     flex-flow: column nowrap;
@@ -57,8 +59,44 @@
     .ant-list-item-content {
       white-space: nowrap;
       text-overflow: ellipsis;
+      display: flex;
+      overflow: hidden;
+      flex-flow: row nowrap;
+      align-items: center;
+    }
+
+    .key {
+      flex: 1;
+    }
+    
+    .type {
       display: block;
-      overflow: hidden
+      padding: 2px 16px;
+      border-radius: 4px;
+      width: 64px;
+      text-align: center;
+      color: white;
+      margin-right: 14px;
+    }
+
+    .string {
+      background-color: green;
+    }
+
+    .hash {
+      background-color: blue;
+    }
+
+    .list {
+      background-color: red;
+    }
+
+    .set {
+      background-color: orange;
+    }
+
+    .zset {
+      background-color: purple;
     }
   }
 
