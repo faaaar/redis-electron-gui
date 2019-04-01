@@ -37,7 +37,6 @@ const HostRules = [{
 }, {
   required: true,
   message: 'Please input your host',
-  pattern: /^((25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(25[0-5]|2[0-4]\d|[01]?\d\d?)$/,
 }]
 
 const PortRules = [{
@@ -133,11 +132,20 @@ class ConnView extends  React.Component {
   renderSaveBtn() {
     const connectConfig = this.getConnectConfig()
     const alias = this.props.form.getFieldValue("alias")
-    const disabledChangeBtn = alias == "" || connectConfig[alias]
+    const host = this.props.form.getFieldValue("host")
+    const auth = this.props.form.getFieldValue("auth")
+    const port = this.props.form.getFieldValue("port")
+
+    let disabled = alias === "" || connectConfig[alias] 
+    if (connectConfig[alias]) {
+      disabled = disabled && (host === "" || connectConfig[alias]['host'] === host)
+      disabled = disabled && (port === "" || connectConfig[alias]['port'] === port)
+      disabled = disabled && (auth === "" || connectConfig[alias]['auth'] === auth)
+    }
     
     return (
       <Button
-        disabled={disabledChangeBtn}
+        disabled={disabled}
         type="danger"
         onClick={() => this.updateConnectConfig(CHANGE_FAVORITE)}
       >

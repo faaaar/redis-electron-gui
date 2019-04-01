@@ -22,16 +22,17 @@ let searchTicker = null
 class DataView extends React.Component {
   constructor(props) {
     super(props)
+
+    this.state = {
+      filter: '*',
+    }
   }
-  
   onFilterChanged(e) {
     const filter = e.target.value
 
-    searchTicker = setTimeout(() => {
-      
-    }, 1000)
-    
-    console.log(filter)
+    this.setState({
+      filter,
+    })
   }
   
   renderKeyListFooter() {
@@ -67,14 +68,14 @@ class DataView extends React.Component {
   }
 
   onClickToSearch() {
-    SearchRedisKeyByFilter()
+    SearchRedisKeyByFilter(this.state.filter)
   }
   
   renderKeyListHeader() {
     return (
       <div className="list-header">
         <Input
-          defaultValue="*"
+          value={this.state.filter}
           onChange={e => this.onFilterChanged(e)}
           type="text"
           placeholder="Key name, support regexp."

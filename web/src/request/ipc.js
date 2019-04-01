@@ -1,5 +1,4 @@
 import {ipcRenderer} from 'electron'
-import EVENTS from './events'
 
 const ipc = {
   send: (args) => {

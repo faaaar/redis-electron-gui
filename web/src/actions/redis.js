@@ -10,14 +10,13 @@ export const REDIS_DISCONNECT = 'REDIS_DISCONNECT'
 export const REDIS_KEYS = 'REDIS_KEYS'
 export const REDIS_FILTER_KEYS = 'REDIS_FILTER_KEYS'
 
-const getConnInfoById = (id) => {
+const getConnInfoById = id => {
   const ret = {
     connInfo: null,
     idx: -1,
   }
   
   const allConnInfo = store.getState().redis.connInfo || []
-  let idx = -1
   const connInfos = allConnInfo.filter((v, i) => {
     if (v.id === id) {
       ret.idx = i
@@ -34,15 +33,23 @@ const getConnInfoById = (id) => {
 }
 
 export const ConnectToRedis = async (newConnInfo, callback) => {
-  const dispatch = store.dispatch 
-  const redis = new Redis(newConnInfo)
+  const dispatch = store.dispatch
+
+  const redisOption = {
+    host: newConnInfo.host,
+    password: newConnInfo.auth,
+    port: newConnInfo.port,
+    enableReadyCheck: false,
+    
+  }
+  const redis = new Redis(redisOption)
   const pong = await redis.ping()
-  newConnInfo.id = CryptoJS.MD5(`${JSON.stringify(newConnInfo)}_${new Date().getTime()}`).toString()
-  newConnInfo.redis = redis
   
   if (pong === 'PONG') {
-    const connInfo = store.getState().redis.connInfo
+    newConnInfo.id = CryptoJS.MD5(`${JSON.stringify(newConnInfo)}_${new Date().getTime()}`).toString()
+    newConnInfo.redis = redis
 
+    const connInfo = store.getState().redis.connInfo
     connInfo.push(newConnInfo)
 
     dispatch({ 
@@ -84,12 +91,11 @@ export const GetKeysById = id => {
 
 export const SearchRedisKeyByFilter = async filter => {
   const dispatch = store.dispatch
-  const connInfo = GetAllConnInfo()
   const currentConnInfo = GetCurrentConnInfo()
   const redis = currentConnInfo.redis
   const stream = redis.scanStream({
     match: filter,
-    count: 100
+    count: 10000
   });
 
   const keys = []
@@ -100,28 +106,16 @@ export const SearchRedisKeyByFilter = async filter => {
       keys.push(resultKeys[i])
     }
     
-    stream.resume();
+    stream.resume(); 
   });
 
   stream.on('end', function () {
-    console.log('done migration');
     dispatch({
       type: REDIS_FILTER_KEYS,
       redisID: currentConnInfo.id,
-      keys,
+      keys: Array.from(new Set(keys)),
     })
   })
-
-  console.log(redis)
-  // const dispatch = store.dispatch
-  // const keys = await ExecRedisCmd(id, 'keys', filter)
-
-  // if (Array.isArray(keys)) {
-  //   dispatch({
-  //     type: REDIS_KEYS,
-  //     keys: keys,
-  //   })
-  // }
 }
 
 
