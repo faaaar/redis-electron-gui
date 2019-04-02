@@ -139,7 +139,9 @@ export const SearchKeyDetail = async (idx, item) => {
     key,
     type
   } = item
-  const redis = store.getState().redis.connInfo[idx].redis
+  const connInfo = store.getState().redis.connInfo[idx]
+  const redisID = connInfo.id
+  const redis = connInfo.redis
   let keyValue = []
   
   switch(type) {
@@ -164,8 +166,10 @@ export const SearchKeyDetail = async (idx, item) => {
 
   dispatch({
     type: REDIS_KEY_DETAIL,
+    redisID,
     key,
     keyValue,
+    keyType: type,
   })
 }
 

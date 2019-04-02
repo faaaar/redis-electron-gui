@@ -1,0 +1,79 @@
+.key-detail {
+  .key-fields {
+    height: 100%;
+  }
+
+  .fields-value {
+    height: 100%;
+  }
+}
+
+
+.key-fields {
+  height: 100%;
+  flex-flow: column nowrap;
+  display: flex;
+
+
+  .field-list {
+    flex: 1;
+    display: flex; 
+    flex-flow: column nowrap;
+    border-top: none;
+    height: 100%;
+  }
+
+  .ant-spin-nested-loading {
+    overflow-y: scroll;
+    overflow-x: hidden;
+    height: 100%;
+  }
+  
+  .list-item {
+    cursor: pointer;    
+
+    &.selected {
+      background-color: #ccc;
+    }
+
+    &:hover {
+      background-color: #ddd;
+    }
+
+    .idx {
+      background: green;
+      flex: 1;
+      padding: 0 2px;
+      border-radius: 4px;
+      color: #fff;
+      margin-right: 4px;
+      display: flex;
+      justify-content: center;
+      align-content: center;
+    }
+
+    .field {
+      width: 168px;
+      text-align: right;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+  }
+}
+
+.fields-value {
+
+}
+
+.fields-value-form {
+  width: 100%;
+
+  .fields-value {
+    width: 100%;
+
+    .ant-form-item-control-wrapper {
+      width: 100%;
+    }
+  }
+}

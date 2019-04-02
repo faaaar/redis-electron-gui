@@ -28,8 +28,10 @@ const initState = {
     // id: '',
   },
   select: {
+    // id: {}
     key: '',
-    value: []
+    keyType: '',
+    keyValue: [],
   }
 }
 
@@ -40,6 +42,7 @@ export default (state = initState, action) => {
     keys,
     key,
     keyValue,
+    keyType,
     redisID,
   } = action
 
@@ -72,11 +75,16 @@ export default (state = initState, action) => {
         filterKey: filterKeyTmp
       })
     case REDIS_KEY_DETAIL:
+      const origSelect = state.select
+      
+      origSelect[redisID] = {
+        key,
+        keyValue,
+        keyType,
+      }
+      
       return Object.assign({}, state, {
-        select: {
-          key,
-          keyValue,
-        }
+        select: origSelect,
       })
     default:
       return state

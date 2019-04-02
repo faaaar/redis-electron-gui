@@ -19,8 +19,6 @@
     display: flex; 
     flex-flow: column nowrap;
     border-top: none;
-
-
   }
   
   .ant-spin-nested-loading {
@@ -50,33 +48,38 @@
   }
 
   .list-item {
+    cursor: pointer;
+
+    &.selected {
+      background-color: #ccc;
+    }
+    
     &:hover {
       background-color: #ddd;
     }
 
-    cursor: pointer;
-
     .ant-list-item-content {
-      white-space: nowrap;
-      text-overflow: ellipsis;
-      display: flex;
-      overflow: hidden;
-      flex-flow: row nowrap;
       align-items: center;
     }
 
     .key {
       flex: 1;
+      width: 0px;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
     }
     
     .type {
-      display: block;
-      padding: 2px 16px;
+      padding: 2px 10px;
       border-radius: 4px;
-      width: 64px;
-      text-align: center;
-      color: white;
+      color: #fff;
       margin-right: 14px;
+      display: flex;
+      line-height: 24px;
+      width: 56px;
+      justify-content: center;
+      align-content: center;
     }
 
     .string {
@@ -102,18 +105,5 @@
 
   .list-selected {
     background-color: #ccc;
-  }
-}
-
-.key-detail {
-  background:green;
-
-  .key-fields {
-    height: 100%;
-    background: yellow;
-  }
-
-  .fields-value {
-    height: 100%;
   }
 }

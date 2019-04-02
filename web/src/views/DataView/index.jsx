@@ -9,6 +9,7 @@ import {
   Icon,
   Tooltip,
 } from 'antd'
+import Detail from './detail'
 
 import {
   SearchKeys,
@@ -30,7 +31,7 @@ class DataView extends React.Component {
     }
   }
 
-  onFilterKeyChange(e) {
+  onPressToFilte(e) {
     const connInfo = this.getRedisConnInfo()
     const filterKey = e.target.value
     
@@ -115,7 +116,6 @@ class DataView extends React.Component {
   
   renderKeyListHeader() {
     const searchKey = this.getRedisSearchKey()
-    const filterKey = this.getRedisFilterKey()
     
     return (
       <div className="list-header">
@@ -131,11 +131,10 @@ class DataView extends React.Component {
         </div>
         <div className="filter">
           <Input
-            value={filterKey}
-            onChange={e => this.onFilterKeyChange(e)}
             type="text"
             placeholder="Key name, support regexp."
             prefix={<Icon type="filter" />}
+            onPressEnter={e => this.onPressToFilte(e)}
           />
         </div>
       </div>
@@ -143,17 +142,18 @@ class DataView extends React.Component {
   }
 
   onClickListItem(e, item) {
-    const connInfo = this.getRedisConnInfo()
     const idx = this.props.match.params.id
     
     SearchKeyDetail(idx, item)
   }
 
   renderKeyListItem(item) {
+    const isSelectMe = item.key === this.props.redis.select.key
+    
     return (
       <Tooltip mouseEnterDelay={0.5} title={item.key}>
         <List.Item
-          className="list-item"
+          className={`list-item ${isSelectMe ? 'selected' : ''}`}
           onClick={e => this.onClickListItem(e, item)}
         >
           <span className={`type ${item.type}`}>{item.type}</span>
@@ -181,10 +181,7 @@ class DataView extends React.Component {
             />
             {this.renderKeyListFooter()}
           </Col>
-          <Col className="key-detail" span={18}>
-            <Col className="key-fields" span={6}></Col>
-            <Col className="fields-value" span={18}></Col>
-          </Col>
+          <Detail />
         </Row>
       </div>
     )
