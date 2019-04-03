@@ -35,29 +35,21 @@ class  Detail extends React.Component {
     })
   }
 
-  renderHashItem(item, i) {
+  renderItem(item, i) {
     return (
       <List.Item
         onClick={e => this.onClickHashItem(item)}
         className="list-item"
       >
-        <span className="idx">{i}</span>
+        <span className="idx">{item.idx}</span>
         <span className="field">{item.field}</span>
-      </List.Item>
-    )
-  }
-
-  renderListItem(item) {
-    return (
-      <List.Item>
-        {item}
       </List.Item>
     )
   }
 
   renderFieldsHeader() {
     return (
-      <p>Header</p>
+      <span>Field List</span>
     )
   }
   
@@ -66,32 +58,48 @@ class  Detail extends React.Component {
       keyValue,
       keyType,
     } = this.getSelectInfo()
+
     const props = {
       className: "field-list",
       size: "small",
       header: this.renderFieldsHeader(),
       bordered: true,
+      renderItem: (item, i) => this.renderItem(item, i),
     }
 
     switch (keyType) {
       case 'hash':
-        props.dataSource = Object.keys(keyValue).map(field => ({
+        props.dataSource = Object.keys(keyValue).map((field, idx) => ({
+          idx,
           field,
-          value: keyValue[field],
         }))
-        props.renderItem = (item, i) => this.renderHashItem(item, i)
         
         break
       case 'set':
+        props.dataSource = keyValue.map((field, idx) => ({idx, field}))
+        
         break
       case 'zset':
+        const dataSource = []
+        const l = keyValue.length / 2
+        
+        for (let i = 0; i < l; i++) {
+          dataSource.push({
+            idx: keyValue[i*2+1],
+            field: keyValue[i*2],
+          })
+        }
+
+        props.dataSource = dataSource
         break
       case 'list':
-        props.dataSource = keyValue
-        props.renderItem = item => this.renderListItem(item)
+        props.dataSource = keyValue.map((field, idx) => ({idx, field}))
+        
         break
       default:
-        return
+        props.dataSource = []
+        
+        break
     }
     
     return (
@@ -103,7 +111,7 @@ class  Detail extends React.Component {
 
   renderValue() {
     const {
-      getFieldDecorator, getFieldsError, getFieldError, isFieldTouched,
+      getFieldDecorator,
     } = this.props.form;
     
     return (
@@ -123,11 +131,15 @@ class  Detail extends React.Component {
           </Form.Item>
 
           <Form.Item>
-            <Button type="primary">Submit</Button>
+            <Button onClick={() => this.onClickSave()} type="primary">Submit</Button>
           </Form.Item>
         </Form>
       </Col>
     )
+  }
+
+  onClickSave() {
+
   }
   
   renderDetail() {
