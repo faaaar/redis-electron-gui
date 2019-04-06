@@ -12,6 +12,7 @@ export const REDIS_SCAN = 'REDIS_SCAN'
 export const REDIS_SEARCH_KEY_SET = 'REDIS_SEARCH_KEY_SET'
 export const REDIS_FILTER_KEY_SET = 'REDIS_FILTER_KEY_SET'
 export const REDIS_KEY_DETAIL = 'REDIS_KEY_DETAIL'
+export const REDIS_EDIT_KEY = 'REDIS_EDIT_KEY'
 
 export const SetFilterKey = (redisID, key) => {
   const dispatch = store.dispatch
@@ -133,7 +134,7 @@ export const SearchKeys = async searchKey => {
   })
 }
 
-export const SearchKeyDetail = async (idx, item) => {
+export const SearchKeyDetail = async (idx, item, field) => {
   const dispatch = store.dispatch
   const {
     key,
@@ -143,22 +144,51 @@ export const SearchKeyDetail = async (idx, item) => {
   const redisID = connInfo.id
   const redis = connInfo.redis
   let keyValue = []
+  let selectField = ''
+  let selectValue = ''
   
   switch(type) {
     case "string":
       keyValue = await redis.get(key)
+      selectValue = keyValue
+      
       break
     case "hash":
       keyValue = await redis.hgetall(key)
+      
+      for (let k in keyValue) {
+        selectField = field || k
+        selectValue = keyValue[k]
+
+        break
+      }
+      
       break
     case "list":
       keyValue = await redis.lrange(key, 0, -1)
+
+      if (keyValue.length > 0) {
+        selectField = field || 0
+        selectValue = keyValue[0]
+      }
+      
       break
     case "set":
       keyValue = await redis.smembers(key)
+      if (keyValue.length > 0) {
+        selectField = 0
+        selectValue = keyValue[0]
+      }
+      
       break
     case "zset":
-      keyValue = await redis.zrange(key, 0, -1, "WITHSCORES") 
+      keyValue = await redis.zrange(key, 0, -1, "WITHSCORES")
+
+      if (keyValue.length >= 2) {
+        selectField = field || 0
+        selectValue = keyValue[selectField*2]
+      }
+      
       break
     default:
       return
@@ -170,7 +200,100 @@ export const SearchKeyDetail = async (idx, item) => {
     key,
     keyValue,
     keyType: type,
+    selectField,
+    selectValue,
+  })
+} 
+
+export const RedisSelectKeyField = (idx, selectField) => {
+  const dispatch = store.dispatch
+  const connInfo = store.getState().redis.connInfo[idx]
+  const redisID = connInfo.id
+  const select = store.getState().redis.select[redisID]
+
+  select.selectField = selectField
+  switch(select.keyType) {
+    case 'string':
+      select.selectValue = select.keyValue
+      break
+    case 'hash':
+      select.selectValue = select.keyValue[selectField]
+      break
+    case 'zset':
+      select.selectValue = select.keyValue[selectField*2]
+      break
+    case 'set':
+      select.selectValue = select.keyValue[selectField]
+      break
+    case 'list':
+      select.selectValue = select.keyValue[selectField]
+      break
+  }
+  
+  dispatch({
+    type: REDIS_KEY_DETAIL,
+    redisID,
+    ...select,
   })
 }
 
+export const RedisSelectValueChange = (idx, selectValue) => {
+  const dispatch = store.dispatch
+  const connInfo = store.getState().redis.connInfo[idx]
+  const redisID = connInfo.id
+  const select = store.getState().redis.select[redisID]
 
+  select.selectValue = selectValue
+  
+  dispatch({
+    type: REDIS_KEY_DETAIL,
+    redisID,
+    ...select,
+  })
+}
+
+export const RedisSaveSelectKey = idx => {
+  const dispatch = store.dispatch
+  const connInfo = store.getState().redis.connInfo[idx]
+  const redisID = connInfo.id
+  const redis = connInfo.redis
+  const select = store.getState().redis.select[redisID]
+  const {
+    key,
+    keyType,
+    keyValue,
+    selectField,
+    selectValue,
+  } = select
+  
+  switch(keyType) {
+    case 'string':
+      redis.set(key, selectValue)
+      break
+    case 'list':
+      redis.lset(key, selectField, selectValue)
+      break
+    case 'hash':
+      redis.hset(key, selectField, selectValue)
+      break
+    case 'zset':
+      redis.multi()
+        .zrem(key, keyValue[selectField*2])
+        .zadd(key, keyValue[selectField*2+1], selectValue)
+        .exec()
+      break
+    case 'set':
+      redis.multi()
+        .srem(key, keyValue[selectField])
+        .sadd(key, selectValue)
+        .exec()
+      break
+  }
+
+  SearchKeyDetail(idx, {
+    key,
+    type: keyType,
+  }, selectField)
+
+  return true
+}

@@ -53,8 +53,7 @@
     }
 
     .field {
-      width: 168px;
-      text-align: right;
+      width: 100%;
       overflow: hidden;
       white-space: nowrap;
       text-overflow: ellipsis;
@@ -64,16 +63,4 @@
 
 .fields-value {
 
-}
-
-.fields-value-form {
-  width: 100%;
-
-  .fields-value {
-    width: 100%;
-
-    .ant-form-item-control-wrapper {
-      width: 100%;
-    }
-  }
 }

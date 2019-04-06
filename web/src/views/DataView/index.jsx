@@ -142,13 +142,14 @@ class DataView extends React.Component {
   }
 
   onClickListItem(e, item) {
-    const idx = this.props.match.params.id
+    const redisIDX = this.props.match.params.id
     
-    SearchKeyDetail(idx, item)
+    SearchKeyDetail(redisIDX, item)
   }
 
   renderKeyListItem(item) {
-    const isSelectMe = item.key === this.props.redis.select.key
+    const connInfo = this.getRedisConnInfo()
+    const isSelectMe = item.key === (this.props.redis.select[connInfo.id] || {}).key 
     
     return (
       <Tooltip mouseEnterDelay={0.5} title={item.key}>

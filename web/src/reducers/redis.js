@@ -5,34 +5,38 @@ import {
   REDIS_FILTER_KEY_SET,
   REDIS_SEARCH_KEY_SET,
   REDIS_KEY_DETAIL,
+  REDIS_EDIT_KEY,
 } from '../actions/redis'
 
 const initState = {
   connInfo: [
     // {
-    //   id: '',
+    //   redisID: '',
     //   alias: '',
-    //   host: '',
+    //   host: '', 
     //   port: '',
     //   auth: '',
     //   client: null,
     // }
   ],
   keys: {
-    // id: [],
+    // redisID: [],
   },
   searchKey: {
-    // id: '',
+    // redisID: '',
   },
   filterKey: {
-    // id: '',
+    // redisID: '',
   },
   select: {
-    // id: {}
-    key: '',
-    keyType: '',
-    keyValue: [],
-  }
+    // redisID: {
+    //   key,
+    //   keyType,
+    //   keyValue,
+    //   selectField,
+    //   selectValue,
+    // }
+  },
 }
 
 export default (state = initState, action) => {
@@ -43,7 +47,10 @@ export default (state = initState, action) => {
     key,
     keyValue,
     keyType,
+    keyField,
     redisID,
+    selectField,
+    selectValue,
   } = action
 
   switch (type) {
@@ -73,18 +80,20 @@ export default (state = initState, action) => {
       
       return Object.assign({}, state, {
         filterKey: filterKeyTmp
-      })
+      }) 
     case REDIS_KEY_DETAIL:
-      const origSelect = state.select
+      const nextSelect = state.select
       
-      origSelect[redisID] = {
+      nextSelect[redisID] = {
         key,
         keyValue,
         keyType,
-      }
+        selectField,
+        selectValue,
+      } 
       
       return Object.assign({}, state, {
-        select: origSelect,
+        select: nextSelect,
       })
     default:
       return state

@@ -3,11 +3,18 @@ import {connect} from 'react-redux'
 import {withRouter} from 'react-router'
 import {
   Col,
+  Row,
   List,
   Input,
-  Form,
   Button,
+  message,
 } from 'antd'
+
+import {
+  RedisSelectKeyField,
+  RedisSelectValueChange,
+  RedisSaveSelectKey,
+}  from '../../actions/redis'
 
 import './detail.scss'
 
@@ -27,21 +34,14 @@ class  Detail extends React.Component {
     return this.props.redis.select[connInfo.id] || {}
   }
   
-
-  onClickHashItem(item) {
-    console.log('click hash ', item)
-    this.props.form.setFieldsValue({
-      keyValue: item.value,
-    })
-  }
-
-  renderItem(item, i) {
+  renderItem(item, selectField) {
+    const redisIDX = this.props.match.params.id
+    
     return (
       <List.Item
-        onClick={e => this.onClickHashItem(item)}
-        className="list-item"
+        onClick={e => RedisSelectKeyField(redisIDX, item.idx)}
+        className={`list-item ${selectField === item.idx ? 'selected' : ''}`}
       >
-        <span className="idx">{item.idx}</span>
         <span className="field">{item.field}</span>
       </List.Item>
     )
@@ -49,14 +49,15 @@ class  Detail extends React.Component {
 
   renderFieldsHeader() {
     return (
-      <span>Field List</span>
+      <span>Field / Score</span>
     )
   }
-  
-  renderFields() {
+
+  genFieldListProps() {
     const {
       keyValue,
       keyType,
+      selectField,
     } = this.getSelectInfo()
 
     const props = {
@@ -64,19 +65,16 @@ class  Detail extends React.Component {
       size: "small",
       header: this.renderFieldsHeader(),
       bordered: true,
-      renderItem: (item, i) => this.renderItem(item, i),
+      renderItem: item => this.renderItem(item, selectField),
     }
 
     switch (keyType) {
       case 'hash':
-        props.dataSource = Object.keys(keyValue).map((field, idx) => ({
-          idx,
-          field,
-        }))
+        props.dataSource = Object.keys(keyValue).map(field => ({field, idx: field}))
         
         break
       case 'set':
-        props.dataSource = keyValue.map((field, idx) => ({idx, field}))
+        props.dataSource = keyValue.map((field, idx) => ({field, idx}))
         
         break
       case 'zset':
@@ -85,15 +83,15 @@ class  Detail extends React.Component {
         
         for (let i = 0; i < l; i++) {
           dataSource.push({
-            idx: keyValue[i*2+1],
-            field: keyValue[i*2],
+            idx: i,
+            field: keyValue[i*2+1],
           })
         }
 
         props.dataSource = dataSource
         break
       case 'list':
-        props.dataSource = keyValue.map((field, idx) => ({idx, field}))
+        props.dataSource = keyValue.map((field, idx) => ({field, idx}))
         
         break
       default:
@@ -101,60 +99,40 @@ class  Detail extends React.Component {
         
         break
     }
-    
-    return (
-      <Col className="key-fields" span={6}>
-        <List {...props} />
-      </Col>
-    )
+
+    return props
   }
 
-  renderValue() {
-    const {
-      getFieldDecorator,
-    } = this.props.form;
-    
-    return (
-      <Col className="fields-value" span={18}>
-        <Form layout="inline" className="fields-value-form">
-          <Form.Item className="fields-value">
-            {
-              getFieldDecorator('keyValue')(
-                <TextArea
-                  autosize={{
-                    minRows: 28,
-                    maxRows: 28,
-                  }}
-                />
-              )
-            }
-          </Form.Item>
-
-          <Form.Item>
-            <Button onClick={() => this.onClickSave()} type="primary">Submit</Button>
-          </Form.Item>
-        </Form>
-      </Col>
-    )
-  }
-
-  onClickSave() {
-
-  }
-  
   renderDetail() {
+    const redisIDX = this.props.match.params.id
+    const props = this.genFieldListProps()
+    const showKeyFileds = !!props.dataSource.length
+    
     return(
       <Col className="key-detail" span={18}>
-        {this.renderFields()}
-        {this.renderValue()}
+        {showKeyFileds ? <Col className="key-fields" span={6}><List {...props} /></Col> : ''}
+        <Col className="fields-value" span={showKeyFileds ? 18 : 24}>
+          <Row>
+            <TextArea
+              onChange={e => RedisSelectValueChange(redisIDX, e.target.value)}
+              value={this.getSelectInfo().selectValue}
+              autosize={{
+                minRows: 28,
+                maxRows: 28,
+              }}
+            />
+          </Row>
+          <Row>
+            <Button
+              onClick={() => RedisSaveSelectKey(redisIDX) && message.success("Save successful")}
+              type="primary"
+            >
+              Submit
+            </Button>
+          </Row>
+        </Col>
       </Col>
     ) 
-  }
-
-  renderEmpty() {
-    return (
-      <div></div>
-    )
   }
 
   render() {
@@ -162,11 +140,11 @@ class  Detail extends React.Component {
       key,
     } = this.getSelectInfo()
 
-    return !key ? this.renderEmpty() : this.renderDetail()
+    return !key ? <div /> : this.renderDetail()
   }
 }
 
 export default withRouter(connect(state =>  ({
   global: state.global,
   redis: state.redis,
-}))(Form.create({name: 'redis_detail'})(Detail)))
+}))(Detail))
