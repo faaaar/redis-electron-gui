@@ -8,8 +8,8 @@ import {
 } from '@action/redis'
 
 const initState = {
-  connInfo: [
-    // {
+  connInfoList: {
+    // alias: {
     //   redisID: '',
     //   alias: '',
     //   host: '', 
@@ -17,7 +17,7 @@ const initState = {
     //   auth: '',
     //   client: null,
     // }
-  ],
+  },
   keys: {
     // redisID: [],
   },
@@ -49,19 +49,19 @@ export default (state = initState, action) => {
     selectField,
     selectValue,
     rdsIdx,
-    newConnInfo,
+    connInfo,
   } = action
 
   switch (type) {
     case REDIS_DISCONNECT:
-      const arr = state.connInfo.splice(rdsIdx, 1)
+      const arr = state.connInfoList.splice(rdsIdx, 1)
       if (arr.length) {
         // TODO - disconnect
       }
       
       return Object.assign({}, state)
     case REDIS_CONNECT:
-      state.connInfo.push(newConnInfo)
+      state.connInfoList[connInfo.alias] = connInfo
       return Object.assign({}, state)
     case REDIS_SCAN:
       const keysTmp = state.keys

@@ -1,26 +1,26 @@
 import {
   UPDATE_CONNECT_CONFIG,
-  SWITCH_TABS,
+  SWITCH_REDIS,
 } from '@action/global'
 
 const initState = {
   connectConfig: {
   },
-  activeTabKey: '/',
+  currAlias: '',
 }
 
 export default (state = initState, action) => {
   const {
     type,
     connectConfig,
-    activeTabKey,
+    currAlias,
   } = action
 
   switch (type) {
     case UPDATE_CONNECT_CONFIG:
       return Object.assign({}, state, { connectConfig })
-    case SWITCH_TABS:
-      return Object.assign({}, state, { activeTabKey })
+    case SWITCH_REDIS:
+      return Object.assign({}, state, { currAlias })
     default:
       return state
   }

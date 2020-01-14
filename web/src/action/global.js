@@ -4,14 +4,12 @@ import EVENTS from '@request/events'
 export const GET_APP_CONFIG = 'GET_APP_CONFIG'
 export const GET_CONNECT_CONFIG = 'GET_CONNECT_CONFIG'
 export const UPDATE_CONNECT_CONFIG = 'UPDATE_CONNECT_CONFIG'
-export const SWITCH_TABS = 'SWITCH_TABS'
+export const SWITCH_REDIS = 'SWITCH_REDIS'
 
-console.log(UPDATE_CONNECT_CONFIG)
-
-export const SwitchTabs = activeTabKey => dispatch => {  
+export const SwitchRedis = currAlias => dispatch => {  
   dispatch({
-    type: SWITCH_TABS,
-    activeTabKey,
+    type: SWITCH_REDIS,
+    currAlias, 
   })
 }
 

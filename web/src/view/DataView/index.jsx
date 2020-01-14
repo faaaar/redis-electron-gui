@@ -63,8 +63,8 @@ class DataView extends React.Component {
     this.setState({
       loading: true,
     })
-    const connInfo = this.props.getConnInfo(this.props.global.activeTabKey) || {}
-   
+    const connInfo = this.props.getConnInfo(this.props.currAlias) || {}
+
     await this.props.SearchKeys(connInfo, this.getRedisSearchKey())
 
     this.setState({
@@ -75,26 +75,26 @@ class DataView extends React.Component {
   getRedisConnInfo() {
     const idx = this.props.match.params.id
 
-    return this.props.redis.connInfo[idx] || {}
+    return this.props.connInfoList[idx] || {}
   }
 
   getRedisSearchKey() {
     const connInfo = this.getRedisConnInfo()
     
-    return this.props.redis.searchKey[connInfo.id]
+    return this.props.searchKey[connInfo.id]
   }
 
   getRedisFilterKey() {
     const connInfo = this.getRedisConnInfo()
     
-    return this.props.redis.filterKey[connInfo.id]
+    return this.props.filterKey[connInfo.id]
   }
 
   getRedisKeys() {
     const connInfo = this.getRedisConnInfo()
     const filter = this.getRedisFilterKey() || ''
     
-    let arr = (this.props.redis.keys[connInfo.id] || [])
+    let arr = (this.props.keys[connInfo.id] || [])
 
     const filterArray = filter.split(' ')
 
@@ -150,7 +150,7 @@ class DataView extends React.Component {
 
   renderKeyListItem(item) {
     const connInfo = this.getRedisConnInfo()
-    const isSelectMe = item.key === (this.props.redis.select[connInfo.id] || {}).key 
+    const isSelectMe = item.key === (this.props.select[connInfo.id] || {}).key 
     
     return (
       <Tooltip mouseEnterDelay={0.5} title={item.key}>
@@ -198,9 +198,15 @@ const mapDispatchToProps = dispatch => ({
 })
 
 const mapStateToProps = state => ({
-  global: state.global,
-  redis: state.redis,
-  getConnInfo: idx => state.redis.connInfo[idx],
+  currAlias: state.global.currAlias,
+  connectConfig: state.global.connectConfig,
+  connInfoList: state.redis.connInfoList,
+  searchKey: state.redis.searchKey,
+  filterKey: state.redis.filterKey,
+  select: state.redis.select,
+  keys: state.redis.keys,
+
+  getConnInfo: idx => state.redis.connInfoList[idx],
   getSelect: rdsID => state.redis.select[rdsID],
 })
 

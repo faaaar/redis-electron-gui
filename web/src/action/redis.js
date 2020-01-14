@@ -1,6 +1,6 @@
 import Redis from 'ioredis'
 import CryptoJS from 'crypto-js'
-import { SwitchTabs } from './global'
+import { SwitchRedis } from './global'
 
 export const REDIS_CONNECT = 'REDIS_CONNECT'
 export const REDIS_DISCONNECT = 'REDIS_DISCONNECT'
@@ -27,29 +27,30 @@ export const SetSearchKey = (redisID, key) => dispatch => {
   })
 }
 
-export const ConnectToRedis = (newConnInfo, callback) => async dispatch => {
+export const ConnectToRedis = async (connInfo, dispatch) => {
   const redisOption = {
-    host: newConnInfo.host,
-    password: newConnInfo.auth,
-    port: newConnInfo.port,
+    host: connInfo.host,
+    password: connInfo.auth,
+    port: connInfo.port,
     enableReadyCheck: false,
   }
   const redis = new Redis(redisOption)
   const pong = await redis.ping()
   
   if (pong === 'PONG') {
-    newConnInfo.id = CryptoJS.MD5(`${JSON.stringify(newConnInfo)}_${new Date().getTime()}`).toString()
-    newConnInfo.redis = redis
-    // const connInfo = store.getState().redis.connInfo
-    // connInfo.push(newConnInfo)
+    connInfo.id = CryptoJS.MD5(`${JSON.stringify(connInfo)}_${new Date().getTime()}`).toString()
+    connInfo.redis = redis
+    // const connInfoList = store.getState().redis.connInfoList
+    // connInfoList.push(newConnInfo)
 
     dispatch({ 
       type: REDIS_CONNECT,
-      newConnInfo,
+      connInfo,
     })
 
-    // const idx = `${connInfo.length - 1}`
-    // dispatch(SwitchTabs(idx))
+    // const idx = `${connInfoList.length - 1}`
+    console.log(connInfo)
+    dispatch(SwitchRedis(connInfo.alias))
     // callback(idx)
   }
 }

@@ -91,7 +91,7 @@ class ConnView extends  React.Component {
   }
 
   getConnectConfig() {
-    return  this.props.global.connectConfig || {}
+    return  this.props.connectConfig || {}
   }
 
   onClickConnItem(e, alias) {

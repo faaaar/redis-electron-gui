@@ -1,6 +1,10 @@
 @import '~antd/dist/antd.css';
 
-html, body, .app-root, .app {
+html,
+body,
+.app-root,
+.app,
+section {
   height: 100%;
   width: 100%;  
 }
@@ -20,38 +24,38 @@ html {
   }
 }
 
-.text-center {
-  text-align: center;
-}
+// .text-center {
+//   text-align: center;
+// }
 
-.app-layout {
-  background-color: #fff;
-  height: 100%;
-  display: flex;
-}
+// .app-layout {
+//   background-color: #fff;
+//   height: 100%;
+//   display: flex;
+// }
 
-.app-header {
-  flex: 1;
-  background-color: #fff;
-  padding: 0;
-  margin: 0;
-}
+// .app-header {
+//   flex: 1;
+//   background-color: #fff;
+//   padding: 0;
+//   margin: 0;
+// }
 
-.app-content {
-  display: flex;
-  height: 100%;
-  background-color: #fff;
-}
+// .app-content {
+//   display: flex;
+//   height: 100%;
+//   background-color: #fff;
+// }
 
-.app-tabs {
-  .ant-tabs-bar {
-    margin: 0;
-  }
-  .ant-tabs-content {
-    display: none !important;
-  }
-  .tab-item {
+// .app-tabs {
+//   .ant-tabs-bar {
+//     margin: 0;
+//   }
+//   .ant-tabs-content {
+//     display: none !important;
+//   }
+//   .tab-item {
 
-  }
-}
+//   }
+// }
 

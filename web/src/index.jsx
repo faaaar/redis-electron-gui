@@ -4,21 +4,18 @@ import ReactDOM from 'react-dom'
 import { Provider } from 'react-redux'
 import { Layout } from 'antd'
 import { BrowserRouter, Route, Switch } from 'react-router-dom'
-import { ConnectedRouter } from 'connected-react-router'
-import { GetConnectConfig } from '@action/global'
 import store from './store' 
 
-import ConnView from '@view/ConnView' 
 import DataView from '@view/DataView'
 import DevTools from '@view/DevTools' 
-import AppTabs from './components/AppTabs'
+import SiderList from '@view/SiderList'
 
 import * as serviceWorker from './serviceWorker'
 import './index.scss'
 
 const {
-  Header,
   Content,
+  Sider,
 } = Layout
 
 class App extends React.Component {
@@ -26,27 +23,34 @@ class App extends React.Component {
     super(props)
     this.state = {
       current: 'redis',
+      collapsed: false,
     }
   }
    
   render() {
     let devTool = process.env.NODE_ENV === 'production' ? '' :  (<div style={{ fontSize: '18px' }}><DevTools /></div>)
-    console.log(this.props)
-    
+
     return (
       <BrowserRouter basename="/">
         <div className="app">
           {devTool}
           <Layout className="app-layout">
-            <Header className="app-header">
-              <AppTabs />
-            </Header>
-            <Content className="app-content">
-              <Switch>
-                <Route exact={true} path="/" component={ConnView} />
-                <Route exact={true} path="/view/:id" component={DataView} />
-              </Switch>
-            </Content>
+            <Sider
+              collapsible
+              collapsed={this.state.collapsed}
+              onCollapse={collapsed => this.setState({ collapsed })}
+              theme="light"
+            >
+              <SiderList />
+            </Sider>
+            <Layout>
+              <Content className="app-content">
+                <Switch>
+                  {/* <Route exact={true} path="/" component={ConnView} /> */}
+                  <Route exact={true} path="/view/:id" component={DataView} />
+                </Switch>
+              </Content>
+            </Layout>
           </Layout>
         </div>
       </BrowserRouter>

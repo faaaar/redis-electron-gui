@@ -6,7 +6,6 @@ import {
   List,
   Input,
   Button,
-  message,
 } from 'antd'
 
 import { withRouter } from 'react-router'
@@ -25,7 +24,7 @@ class Detail extends React.Component {
   getRedisConnInfo() {
     const idx = this.props.match.params.id
 
-    return this.props.redis.connInfo[idx] || {}
+    return this.props.redis.connInfoList[idx] || {}
   }
 
   getSelectInfo() {
@@ -171,7 +170,7 @@ const mapStateToProps = state => ({
   global: state.global,
   redis: state.redis,
   router: state.router,
-  getConnInfo: idx => state.redis.connInfo[idx],
+  getConnInfo: idx => state.redis.connInfoList[idx],
   getSelect: rdsID => state.redis.select[rdsID],
 })
 

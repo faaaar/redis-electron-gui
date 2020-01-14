@@ -1,70 +1,70 @@
-.conn-view {
-  flex: 1;
-  width: 100%;
+// .conn-view {
+//   flex: 1;
+//   width: 100%;
 
-  .container {
-    height: 100%;
-  }
+//   .container {
+//     height: 100%;
+//   }
 
-  .favorite-conn {
-    height: 100%;
-  }
+//   .favorite-conn {
+//     height: 100%;
+//   }
 
-  .tree {
-    height: 100%;
-    display: flex;
-    flex-flow: column nowrap;
+//   .tree {
+//     height: 100%;
+//     display: flex;
+//     flex-flow: column nowrap;
 
-    .conn-list {
-      flex: 1;
-      display: flex;
-      flex-flow: column nowrap;
-      overflow-y: scroll;
-    }
+//     .conn-list {
+//       flex: 1;
+//       display: flex;
+//       flex-flow: column nowrap;
+//       overflow-y: scroll;
+//     }
     
-    .list-header {
-      display: flex;
-      align-items: center;
-      height: 32px;
-      justify-content: center;
-      background-color: #ddd;
-    }
+//     .list-header {
+//       display: flex;
+//       align-items: center;
+//       height: 32px;
+//       justify-content: center;
+//       background-color: #ddd;
+//     }
 
-    .list-item {
-      &:hover {
-        background-color: #ddd;
-      }
+//     .list-item {
+//       &:hover {
+//         background-color: #ddd;
+//       }
 
-      cursor: pointer;
-    }
+//       cursor: pointer;
+//     }
 
-    .list-selected {
-      background-color: #ccc;
-    }
-  }
+//     .list-selected {
+//       background-color: #ccc;
+//     }
+//   }
 
 
 
-  .config-panel {
-    display: flex;
-    height: 100%;
-    background-color: #ddd;
-    justify-content: center;
-    align-content: center;
+//   .config-panel {
+//     display: flex;
+//     height: 100%;
+//     background-color: #ddd;
+//     justify-content: center;
+//     align-content: center;
     
-    .config-form {
-      background-color:#ccc;
-      padding: 32px;
-      margin: 60px 0 auto;
-      width: 564px;
-    }
+//     .config-form {
+//       background-color:#ccc;
+//       padding: 32px;
+//       margin: 60px 0 auto;
+//       width: 564px;
+//     }
 
-    .btn-group {
-      display: flex;
-    }
+//     .btn-group {
+//       display: flex;
+//     }
     
-    .form-btn button {
-      flex: 1;
-    }
-  }
-}
+//     .form-btn button {
+//       flex: 1;
+//     }
+//   }
+// }
