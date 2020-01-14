@@ -10,7 +10,7 @@ import {
   Modal,
 } from 'antd';
 import { ConnectToRedis } from '@action/redis'
-import { AddConnectConfig, DelConnectConfig } from '@action/global'
+import { AddConnectConfig, DelConnectConfig, GetConnectConfig } from '@action/global'
 
 import './index.scss'
 
@@ -50,6 +50,11 @@ const ADD_TO_FAVORITE = "ADD_TO_FAVORITE"
 const CHANGE_FAVORITE = "CHANGE_FAVORITE"
 
 class ConnView extends  React.Component {
+   componentDidMount() {
+     this.props.GetConnectConfig()
+  }
+
+  
   onClickConnectToRedis(e) {
     e.preventDefault();
     this.props.form.validateFieldsAndScroll(err => {
@@ -162,7 +167,7 @@ class ConnView extends  React.Component {
     return(
       <Button
         type="primary"
-        onClick={e => this.props.onClickConnectToRedis(e)}
+        onClick={e => this.onClickConnectToRedis(e)}
       >
         Connect
       </Button>
@@ -260,7 +265,8 @@ const WrappedConnView = Form.create({
 const mapDispatchToProps = dispatch => ({
   ConnectToRedis: (newConnInfo, callback) => dispatch(ConnectToRedis(newConnInfo, callback)),
   AddConnectConfig: newConfig => dispatch(AddConnectConfig(newConfig)),
-  DelConnectConfig: alias => dispatch(DelConnectConfig(alias))
+  DelConnectConfig: alias => dispatch(DelConnectConfig(alias)),
+  GetConnectConfig: () => dispatch(GetConnectConfig())
 })
 
 const mapStateToProps = state => ({

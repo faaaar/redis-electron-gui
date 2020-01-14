@@ -33,7 +33,6 @@ export const ConnectToRedis = (newConnInfo, callback) => async dispatch => {
     password: newConnInfo.auth,
     port: newConnInfo.port,
     enableReadyCheck: false,
-    
   }
   const redis = new Redis(redisOption)
   const pong = await redis.ping()

@@ -33,28 +33,29 @@ export const UpdateConnectConfig = connectConfig => dispatch => {
   })
 }
 
-export const GetConnectConfig = async () => {
+export const GetConnectConfig = () => async dispatch => {
   const connectConfig = await ipc.send({
     type: EVENTS.GET_CONNECT_CONFIG,
   })
   
-  UpdateConnectConfig(connectConfig)
+  dispatch(UpdateConnectConfig(connectConfig))
 } 
 
-export const AddConnectConfig = async newConfig => {
+export const AddConnectConfig = newConfig => async dispatch => {
   const connectConfig = await ipc.send({
     type: EVENTS.ADD_CONNECT_CONFIG,
     data: newConfig,
   })
-  
-  UpdateConnectConfig(connectConfig)
+
+  console.log(connectConfig)
+  dispatch(UpdateConnectConfig(connectConfig))
 }
 
-export const DelConnectConfig = async alias => {
+export const DelConnectConfig = alias => async dispatch =>{
   const connectConfig = await ipc.send({
     type: EVENTS.DEL_CONNECT_CONFIG,
     data: alias,
   })
 
-  UpdateConnectConfig(connectConfig)
+  dispatch(UpdateConnectConfig(connectConfig))
 }

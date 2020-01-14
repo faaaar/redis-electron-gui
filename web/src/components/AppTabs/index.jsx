@@ -3,7 +3,7 @@ import { Tabs } from 'antd';
 import { SwitchTabs } from '@action/global'
 import { DisconnectRedis } from '@action/redis'
 import { connect } from 'react-redux'
-import { history } from '@store'
+import { withRouter } from 'react-router'
 
 const TabPane = Tabs.TabPane
 
@@ -33,7 +33,8 @@ class AppTabs extends React.Component {
   
   render() {
     const activeTabKey = this.props.global.activeTabKey
-
+    const connInfo = this.props.redis.connInfo || []
+    console.log(this.props.redis )
     return (
       <Tabs
         activeKey={activeTabKey}
@@ -45,7 +46,7 @@ class AppTabs extends React.Component {
       >
         <TabPane className="tab-item" tab="Config" key="/" />
         {
-          this.props.redis.connInfo.map((conn, i) => (
+          connInfo.map((conn, i) => (
             <TabPane className="tab-item" tab={conn.alias} key={i} />
           ))
         }
@@ -58,7 +59,6 @@ const mapStateToProps = state => ({
   redis: state.redis,
   global: state.global,
   router: state.router,
-  history,
 })
 
 const mapDispatchToProps = dispatch => ({
@@ -66,7 +66,7 @@ const mapDispatchToProps = dispatch => ({
   SwitchTabs: tabs => dispatch(SwitchTabs(tabs)),
 })
 
-export default connect(
+export default withRouter(connect(
   mapStateToProps,
   mapDispatchToProps,
-)(AppTabs)
+)(AppTabs))

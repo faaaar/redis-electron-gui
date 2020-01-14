@@ -6,7 +6,7 @@ import { Layout } from 'antd'
 import { BrowserRouter, Route, Switch } from 'react-router-dom'
 import { ConnectedRouter } from 'connected-react-router'
 import { GetConnectConfig } from '@action/global'
-import store, { history } from './store'
+import store from './store' 
 
 import ConnView from '@view/ConnView' 
 import DataView from '@view/DataView'
@@ -28,41 +28,35 @@ class App extends React.Component {
       current: 'redis',
     }
   }
-  
-  componentDidMount() {
-    GetConnectConfig()
-  }
-  
+   
   render() {
     let devTool = process.env.NODE_ENV === 'production' ? '' :  (<div style={{ fontSize: '18px' }}><DevTools /></div>)
     console.log(this.props)
     
-    return ( 
-      <div className="app">
-        {devTool}
-        <Layout className="app-layout">
-          <Header className="app-header">
-            <AppTabs />
-          </Header>
-          <Content className="app-content">
-            <Switch>
-              <Route exact={true} path="/" component={ConnView} />
-              <Route exact={true} path="/view/:id" component={DataView} />
-            </Switch>
-          </Content>
-        </Layout>
-      </div>
+    return (
+      <BrowserRouter basename="/">
+        <div className="app">
+          {devTool}
+          <Layout className="app-layout">
+            <Header className="app-header">
+              <AppTabs />
+            </Header>
+            <Content className="app-content">
+              <Switch>
+                <Route exact={true} path="/" component={ConnView} />
+                <Route exact={true} path="/view/:id" component={DataView} />
+              </Switch>
+            </Content>
+          </Layout>
+        </div>
+      </BrowserRouter>
     )
   }
 }
 
 ReactDOM.render(
   <Provider store={store}>
-    <ConnectedRouter history={history}>
-      <BrowserRouter basename="/">
-        <App />
-      </BrowserRouter>
-    </ConnectedRouter>
+    <App />
   </Provider>,
   document.getElementById('app-root'),
 )

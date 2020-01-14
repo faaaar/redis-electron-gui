@@ -59,7 +59,7 @@ export default (state = initState, action) => {
       return Object.assign({}, state)
     case REDIS_CONNECT:
       state.connInfo.push(newConnInfo)
-      return Object.assign({}, state, { connInfo })
+      return Object.assign({}, state)
     case REDIS_SCAN:
       const keysTmp = state.keys
       

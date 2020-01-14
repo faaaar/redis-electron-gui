@@ -9,6 +9,8 @@ import {
   message,
 } from 'antd'
 
+import { withRouter } from 'react-router'
+
 import {
   RedisSelectKeyField,
   RedisSelectValueChange,
@@ -20,7 +22,12 @@ import './detail.scss'
 const { TextArea } = Input;
 
 class Detail extends React.Component {
-
+ 
+  constructor(props) {
+    super(props)
+    console.log(this.props,'_______')
+  }
+  
   getRedisConnInfo() {
     const idx = this.props.match.params.id
 
@@ -168,13 +175,14 @@ const mapDispatchToProps = dispatch => ({
 const mapStateToProps = state => ({
   global: state.global,
   redis: state.redis,
+  router: state.router,
   getConnInfoByIdx: idx => state.redis.connInfo[idx],
   getSelect: rdsID => state.redis.select[rdsID],
 })
 
-export default connect(
+export default withRouter(connect(
   mapStateToProps,
   mapDispatchToProps,
-)(Detail)
+)(Detail))
 
 
