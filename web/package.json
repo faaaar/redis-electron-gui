@@ -7,9 +7,13 @@
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
     "antd": "^3.26.7",
+    "babel-eslint": "^10.0.3",
+    "connected-react-router": "^6.6.1",
     "craco": "^0.0.3",
     "crypto-js": "^3.1.9-1",
     "electron": "^7.1.9",
+    "eslint": "^6.8.0",
+    "eslint-plugin-react": "^7.17.0",
     "ioredis": "^4.14.1",
     "node-sass": "^4.13.0",
     "react": "^16.12.0",
@@ -29,7 +33,8 @@
     "start": "craco start",
     "build": "craco build",
     "test": "craco test",
-    "eject": "craco eject"
+    "eject": "craco eject",
+    "fix": "eslint --fix src/."
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -45,5 +50,6 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  }
+  },
+  "devDependencies": {}
 }

@@ -1,15 +1,13 @@
 import store from '../store'
-import ipc from '../request/ipc'
-import EVENTS from '../request/events'
+import ipc from '@request/ipc'
+import EVENTS from '@request/events'
 
 export const GET_APP_CONFIG = 'GET_APP_CONFIG'
 export const GET_CONNECT_CONFIG = 'GET_CONNECT_CONFIG'
 export const UPDATE_CONNECT_CONFIG = 'UPDATE_CONNECT_CONFIG'
 export const SWITCH_TABS = 'SWITCH_TABS'
 
-export const SwitchTabs = activeTabKey => {
-  const dispatch = store.dispatch
-  
+export const SwitchTabs = activeTabKey => dispatch => {  
   dispatch({
     type: SWITCH_TABS,
     activeTabKey,
@@ -29,7 +27,7 @@ export const GetAppConfig = async () => {
   })
 }
 
-export const UpdateConnectConfig = (connectConfig) => {
+export const UpdateConnectConfig = connectConfig => {
   const dispatch = store.dispatch
   
   dispatch({
@@ -46,7 +44,7 @@ export const GetConnectConfig = async () => {
   UpdateConnectConfig(connectConfig)
 } 
 
-export const AddConnectConfig = async (newConfig) => {
+export const AddConnectConfig = async newConfig => {
   const connectConfig = await ipc.send({
     type: EVENTS.ADD_CONNECT_CONFIG,
     data: newConfig,
@@ -55,7 +53,7 @@ export const AddConnectConfig = async (newConfig) => {
   UpdateConnectConfig(connectConfig)
 }
 
-export const DelConnectConfig = async(alias) => {
+export const DelConnectConfig = async alias => {
   const connectConfig = await ipc.send({
     type: EVENTS.DEL_CONNECT_CONFIG,
     data: alias,

@@ -65,8 +65,7 @@ export const ConnectToRedis = async (newConnInfo, callback) => {
   }
 }
 
-export const DisconnectRedis = async (idx, callback) => {
-  const dispatch = store.dispatch
+export const DisconnectRedis = async (idx, callback) => dispatch => {
   const connInfo = store.getState().redis.connInfo
 
   connInfo.splice(idx, 1)
@@ -83,62 +82,56 @@ export const GetCurrentConnInfo = () => {
   return connInfo
 }
 
-export const GetAllConnInfo = () => {
-  return store.getState().redis.connInfo
-}
+export const GetAllConnInfo = () => store.getState().redis.connInfo
 
-export const GetKeysById = id => {
-  return store.getState().redis.keys[id]
-}
+export const GetKeysById = id => store.getState().redis.keys[id]
 
-export const SearchKeys = async searchKey => {
-  return new Promise(resolve => {
-    const dispatch = store.dispatch
-    const currentConnInfo = GetCurrentConnInfo()
-    const redis = currentConnInfo.redis
-    const stream = redis.scanStream({
-      match: searchKey,
-      count: 10000
-    });
-    const pipeline = redis.pipeline()
-    const keys = []
-    stream.on('data', async resultKeys => {
-      stream.pause();
-
-      for (var i = 0; i < resultKeys.length; i++) {
-        keys.push({
-          key: resultKeys[i],
-          type: '',
-        })
-
-        pipeline.type(resultKeys[i])
-      }
-      
-      stream.resume(); 
-    });
-
-    stream.on('end', async () => {
-      const typeList = await pipeline.exec()
-
-      for (var i = 0; i < keys.length; i++) {
-        keys[i]['type'] = typeList[i][1]
-      }
-      
-      dispatch({
-        type: REDIS_SCAN,
-        redisID: currentConnInfo.id,
-        keys,
-      })
-      resolve(true)
-    })
+export const SearchKeys = async searchKey => new Promise(resolve => {
+  const dispatch = store.dispatch
+  const currentConnInfo = GetCurrentConnInfo()
+  const redis = currentConnInfo.redis
+  const stream = redis.scanStream({
+    match: searchKey,
+    count: 10000,
   })
-}
+  const pipeline = redis.pipeline()
+  const keys = []
+  stream.on('data', async resultKeys => {
+    stream.pause()
+
+    for (var i = 0; i < resultKeys.length; i++) {
+      keys.push({
+        key: resultKeys[i],
+        type: '',
+      })
+
+      pipeline.type(resultKeys[i])
+    }
+      
+    stream.resume() 
+  })
+
+  stream.on('end', async () => {
+    const typeList = await pipeline.exec()
+
+    for (var i = 0; i < keys.length; i++) {
+      keys[i]['type'] = typeList[i][1]
+    }
+      
+    dispatch({
+      type: REDIS_SCAN,
+      redisID: currentConnInfo.id,
+      keys,
+    })
+    resolve(true)
+  })
+})
 
 export const SearchKeyDetail = async (idx, item, field) => {
   const dispatch = store.dispatch
   const {
     key,
-    type
+    type,
   } = item
   const connInfo = store.getState().redis.connInfo[idx]
   const redisID = connInfo.id
@@ -148,12 +141,12 @@ export const SearchKeyDetail = async (idx, item, field) => {
   let selectValue = ''
   
   switch(type) {
-    case "string":
+    case 'string':
       keyValue = await redis.get(key)
       selectValue = keyValue
       
       break
-    case "hash":
+    case 'hash':
       keyValue = await redis.hgetall(key)
       
       for (let k in keyValue) {
@@ -164,7 +157,7 @@ export const SearchKeyDetail = async (idx, item, field) => {
       }
       
       break
-    case "list":
+    case 'list':
       keyValue = await redis.lrange(key, 0, -1)
 
       if (keyValue.length > 0) {
@@ -173,7 +166,7 @@ export const SearchKeyDetail = async (idx, item, field) => {
       }
       
       break
-    case "set":
+    case 'set':
       keyValue = await redis.smembers(key)
       if (keyValue.length > 0) {
         selectField = 0
@@ -181,8 +174,8 @@ export const SearchKeyDetail = async (idx, item, field) => {
       }
       
       break
-    case "zset":
-      keyValue = await redis.zrange(key, 0, -1, "WITHSCORES")
+    case 'zset':
+      keyValue = await redis.zrange(key, 0, -1, 'WITHSCORES')
 
       if (keyValue.length >= 2) {
         selectField = field || 0
@@ -210,7 +203,7 @@ export const RedisSelectKeyField = (idx, selectField) => {
   const connInfo = store.getState().redis.connInfo[idx]
   const redisID = connInfo.id
   const select = store.getState().redis.select[redisID]
-
+  
   select.selectField = selectField
   switch(select.keyType) {
     case 'string':
@@ -228,6 +221,8 @@ export const RedisSelectKeyField = (idx, selectField) => {
     case 'list':
       select.selectValue = select.keyValue[selectField]
       break
+    default:
+      console.error(`NO KEY TYPE ----- ${select.keyType}`)
   }
   
   dispatch({
@@ -253,7 +248,6 @@ export const RedisSelectValueChange = (idx, selectValue) => {
 }
 
 export const RedisSaveSelectKey = idx => {
-  const dispatch = store.dispatch
   const connInfo = store.getState().redis.connInfo[idx]
   const redisID = connInfo.id
   const redis = connInfo.redis
@@ -288,6 +282,8 @@ export const RedisSaveSelectKey = idx => {
         .sadd(key, selectValue)
         .exec()
       break
+    default:
+      console.error(`NO KEY TYPE ----- ${select.keyType}`)
   }
 
   SearchKeyDetail(idx, {

@@ -1,13 +1,13 @@
-import {ipcRenderer} from 'electron'
+import { ipcRenderer } from 'electron'
 
 const ipc = {
-  send: (args) => {
+  send: args => {
     const {
       type,
       data,
     } = args
 
-    console.log("send type data", type ,data)
+    console.log('send type data', type ,data)
     
     return new Promise((resolve, reject) => {
       ipc.responseOnce(type, (e, response) => {

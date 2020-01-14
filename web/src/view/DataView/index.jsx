@@ -16,7 +16,7 @@ import {
   SetFilterKey,
   SetSearchKey,
   SearchKeyDetail,
-} from '../../actions/redis'
+} from '@action/redis'
 
 import './index.scss'
 

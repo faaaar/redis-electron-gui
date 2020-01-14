@@ -1,5 +1,4 @@
 import React from 'react'
-import {withRouter} from 'react-router'
 import { connect } from 'react-redux'
 import {
   Row,
@@ -12,12 +11,12 @@ import {
 } from 'antd';
 import {
   ConnectToRedis,
-} from '../../actions/redis'
+} from '@action/redis'
 
 import { 
   AddConnectConfig,
   DelConnectConfig,
-} from '../../actions/global'
+} from '@action/global'
 
 import './index.scss'
 
@@ -273,7 +272,7 @@ const mapStateToProps = state => ({
   redis: state.redis,
 })
 
-export default withRouter(connect(
+export default connect(
   mapStateToProps,
   mapDispatchToProps,
-)(WrappedConnView))
+)(WrappedConnView)

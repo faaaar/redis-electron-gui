@@ -1,6 +1,5 @@
 import React from 'react'
 import {connect} from 'react-redux'
-import {withRouter} from 'react-router'
 import {
   Col,
   Row,
@@ -14,7 +13,7 @@ import {
   RedisSelectKeyField,
   RedisSelectValueChange,
   RedisSaveSelectKey,
-}  from '../../actions/redis'
+}  from '@action/redis'
 
 import './detail.scss'
 
@@ -144,7 +143,7 @@ class  Detail extends React.Component {
   }
 }
 
-export default withRouter(connect(state =>  ({
+export default connect(state =>  ({
   global: state.global,
   redis: state.redis,
-}))(Detail))
+}))(Detail)

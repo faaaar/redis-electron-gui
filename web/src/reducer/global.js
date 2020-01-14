@@ -1,7 +1,7 @@
 import {
   UPDATE_CONNECT_CONFIG,
   SWITCH_TABS,
-} from '../actions/global'
+} from '@action/global'
 
 const initState = {
   connectConfig: {
@@ -18,9 +18,9 @@ export default (state = initState, action) => {
 
   switch (type) {
     case UPDATE_CONNECT_CONFIG:
-      return Object.assign({}, state, {connectConfig})
+      return Object.assign({}, state, { connectConfig })
     case SWITCH_TABS:
-      return Object.assign({}, state, {activeTabKey})
+      return Object.assign({}, state, { activeTabKey })
     default:
       return state
   }
