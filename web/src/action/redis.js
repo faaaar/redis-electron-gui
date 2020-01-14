@@ -1,9 +1,6 @@
 import Redis from 'ioredis'
 import CryptoJS from 'crypto-js'
-import store from '../store'
-import {
-  SwitchTabs,
-} from './global'
+import { SwitchTabs } from './global'
 
 export const REDIS_CONNECT = 'REDIS_CONNECT'
 export const REDIS_DISCONNECT = 'REDIS_DISCONNECT'
@@ -14,9 +11,7 @@ export const REDIS_FILTER_KEY_SET = 'REDIS_FILTER_KEY_SET'
 export const REDIS_KEY_DETAIL = 'REDIS_KEY_DETAIL'
 export const REDIS_EDIT_KEY = 'REDIS_EDIT_KEY'
 
-export const SetFilterKey = (redisID, key) => {
-  const dispatch = store.dispatch
-
+export const SetFilterKey = (redisID, key) => dispatch => {
   dispatch({
     type: REDIS_FILTER_KEY_SET,
     key,
@@ -24,9 +19,7 @@ export const SetFilterKey = (redisID, key) => {
   })
 }
 
-export const SetSearchKey = (redisID, key) => {
-  const dispatch = store.dispatch
-
+export const SetSearchKey = (redisID, key) => dispatch => {
   dispatch({
     type: REDIS_SEARCH_KEY_SET,
     key,
@@ -34,9 +27,7 @@ export const SetSearchKey = (redisID, key) => {
   })
 }
 
-export const ConnectToRedis = async (newConnInfo, callback) => {
-  const dispatch = store.dispatch
-
+export const ConnectToRedis = (newConnInfo, callback) => async dispatch => {
   const redisOption = {
     host: newConnInfo.host,
     password: newConnInfo.auth,
@@ -50,46 +41,29 @@ export const ConnectToRedis = async (newConnInfo, callback) => {
   if (pong === 'PONG') {
     newConnInfo.id = CryptoJS.MD5(`${JSON.stringify(newConnInfo)}_${new Date().getTime()}`).toString()
     newConnInfo.redis = redis
-
-    const connInfo = store.getState().redis.connInfo
-    connInfo.push(newConnInfo)
+    // const connInfo = store.getState().redis.connInfo
+    // connInfo.push(newConnInfo)
 
     dispatch({ 
       type: REDIS_CONNECT,
-      connInfo,
+      newConnInfo,
     })
 
-    const idx = `${connInfo.length - 1}`
-    SwitchTabs(idx)
-    callback(idx)
+    // const idx = `${connInfo.length - 1}`
+    // dispatch(SwitchTabs(idx))
+    // callback(idx)
   }
 }
 
-export const DisconnectRedis = async (idx, callback) => dispatch => {
-  const connInfo = store.getState().redis.connInfo
-
-  connInfo.splice(idx, 1)
+export const DisconnectRedis = async (idx, callback) => dispatch => { 
   dispatch({
     type: REDIS_DISCONNECT,
-    connInfo,
-  })
+    rdsIdx: idx,
+  }) 
 }
 
-export const GetCurrentConnInfo = () => {
-  const idx = store.getState().global.activeTabKey
-  const connInfo = GetAllConnInfo()[idx] || {}
-
-  return connInfo
-}
-
-export const GetAllConnInfo = () => store.getState().redis.connInfo
-
-export const GetKeysById = id => store.getState().redis.keys[id]
-
-export const SearchKeys = async searchKey => new Promise(resolve => {
-  const dispatch = store.dispatch
-  const currentConnInfo = GetCurrentConnInfo()
-  const redis = currentConnInfo.redis
+export const SearchKeys = async (connInfo, searchKey, dispatch) => new Promise(resolve => {
+  const redis = connInfo.redis
   const stream = redis.scanStream({
     match: searchKey,
     count: 10000,
@@ -120,20 +94,18 @@ export const SearchKeys = async searchKey => new Promise(resolve => {
       
     dispatch({
       type: REDIS_SCAN,
-      redisID: currentConnInfo.id,
+      redisID: connInfo.id,
       keys,
     })
     resolve(true)
   })
 })
 
-export const SearchKeyDetail = async (idx, item, field) => {
-  const dispatch = store.dispatch
+export const SearchKeyDetail = (connInfo, item, field) => async dispatch => {
   const {
     key,
     type,
   } = item
-  const connInfo = store.getState().redis.connInfo[idx]
   const redisID = connInfo.id
   const redis = connInfo.redis
   let keyValue = []
@@ -198,12 +170,7 @@ export const SearchKeyDetail = async (idx, item, field) => {
   })
 } 
 
-export const RedisSelectKeyField = (idx, selectField) => {
-  const dispatch = store.dispatch
-  const connInfo = store.getState().redis.connInfo[idx]
-  const redisID = connInfo.id
-  const select = store.getState().redis.select[redisID]
-  
+export const RedisSelectKeyField = (select, rdsID, selectField) => dispatch => { 
   select.selectField = selectField
   switch(select.keyType) {
     case 'string':
@@ -227,31 +194,24 @@ export const RedisSelectKeyField = (idx, selectField) => {
   
   dispatch({
     type: REDIS_KEY_DETAIL,
-    redisID,
+    redisID: rdsID,
     ...select,
   })
 }
 
-export const RedisSelectValueChange = (idx, selectValue) => {
-  const dispatch = store.dispatch
-  const connInfo = store.getState().redis.connInfo[idx]
-  const redisID = connInfo.id
-  const select = store.getState().redis.select[redisID]
-
+export const RedisSelectValueChange = (select, rdsID, selectValue) => dispatch => {
   select.selectValue = selectValue
   
   dispatch({
     type: REDIS_KEY_DETAIL,
-    redisID,
+    redisID: rdsID,
     ...select,
   })
 }
 
-export const RedisSaveSelectKey = idx => {
-  const connInfo = store.getState().redis.connInfo[idx]
-  const redisID = connInfo.id
+export const RedisSaveSelectKey = (rdsIDX, connInfo, select) => dispatch => {
   const redis = connInfo.redis
-  const select = store.getState().redis.select[redisID]
+  
   const {
     key,
     keyType,
@@ -286,10 +246,8 @@ export const RedisSaveSelectKey = idx => {
       console.error(`NO KEY TYPE ----- ${select.keyType}`)
   }
 
-  SearchKeyDetail(idx, {
+  dispatch(SearchKeyDetail(rdsIDX, {
     key,
     type: keyType,
-  }, selectField)
-
-  return true
+  }, selectField))
 }

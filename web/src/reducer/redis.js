@@ -49,11 +49,16 @@ export default (state = initState, action) => {
     redisID,
     selectField,
     selectValue,
+    rdsIdx,
+    newConnInfo,
   } = action
 
   switch (type) {
     case REDIS_DISCONNECT:
+      state.connInfo.splice(rdsIdx, 1)
+      return Object.assign({}, state)
     case REDIS_CONNECT:
+      state.connInfo.push(newConnInfo)
       return Object.assign({}, state, { connInfo })
     case REDIS_SCAN:
       const keysTmp = state.keys

@@ -42,7 +42,7 @@ class App extends React.Component {
         {devTool}
         <Layout className="app-layout">
           <Header className="app-header">
-            <AppTabs {...this.props} />
+            <AppTabs />
           </Header>
           <Content className="app-content">
             <Switch>

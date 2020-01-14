@@ -9,14 +9,8 @@ import {
   Button,
   Modal,
 } from 'antd';
-import {
-  ConnectToRedis,
-} from '@action/redis'
-
-import { 
-  AddConnectConfig,
-  DelConnectConfig,
-} from '@action/global'
+import { ConnectToRedis } from '@action/redis'
+import { AddConnectConfig, DelConnectConfig } from '@action/global'
 
 import './index.scss'
 
@@ -60,7 +54,7 @@ class ConnView extends  React.Component {
     e.preventDefault();
     this.props.form.validateFieldsAndScroll(err => {
       if (!err) {
-        ConnectToRedis({...this.props.form.getFieldsValue()}, id => {
+        this.props.ConnectToRedis({...this.props.form.getFieldsValue()}, id => {
           this.props.history.push('/view/' + id)
         })
       }
@@ -80,12 +74,12 @@ class ConnView extends  React.Component {
             title: `The \`${alias}\` will be changed`,
             content: 'continue?',
             onOk() {
-              AddConnectConfig(fieldsValue)
+              this.props.AddConnectConfig(fieldsValue)
             },
             onCancel() {},
           })
         } else {
-          AddConnectConfig(fieldsValue)
+          this.props.AddConnectConfig(fieldsValue)
         }
       }
     })
@@ -122,7 +116,7 @@ class ConnView extends  React.Component {
       title: `The \`${alias}\` will be deleted`,
       content: `continue?`,
       onOk() {
-        DelConnectConfig(alias)
+        this.props.DelConnectConfig(alias)
       },
       onCancel() {},
     })
@@ -168,7 +162,7 @@ class ConnView extends  React.Component {
     return(
       <Button
         type="primary"
-        onClick={e => this.onClickConnectToRedis(e)}
+        onClick={e => this.props.onClickConnectToRedis(e)}
       >
         Connect
       </Button>
@@ -264,7 +258,9 @@ const WrappedConnView = Form.create({
 })(ConnView)
 
 const mapDispatchToProps = dispatch => ({
-
+  ConnectToRedis: (newConnInfo, callback) => dispatch(ConnectToRedis(newConnInfo, callback)),
+  AddConnectConfig: newConfig => dispatch(AddConnectConfig(newConfig)),
+  DelConnectConfig: alias => dispatch(DelConnectConfig(alias))
 })
 
 const mapStateToProps = state => ({

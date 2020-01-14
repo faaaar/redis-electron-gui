@@ -19,7 +19,7 @@ import './detail.scss'
 
 const { TextArea } = Input;
 
-class  Detail extends React.Component {
+class Detail extends React.Component {
 
   getRedisConnInfo() {
     const idx = this.props.match.params.id
@@ -34,11 +34,16 @@ class  Detail extends React.Component {
   }
   
   renderItem(item, selectField) {
-    const redisIDX = this.props.match.params.id
+    const rdsIDX = this.props.match.params.id
+    const connInfo = this.props.getConnInfo(rdsIDX)
     
     return (
       <List.Item
-        onClick={e => RedisSelectKeyField(redisIDX, item.idx)}
+        onClick={e => this.props.RedisSelectKeyField(
+          this.props.getSelect(connInfo.id),
+          connInfo.id,
+          item.idx,
+        )}
         className={`list-item ${selectField === item.idx ? 'selected' : ''}`}
       >
         <span className="field">{item.field}</span>
@@ -103,17 +108,22 @@ class  Detail extends React.Component {
   }
 
   renderDetail() {
-    const redisIDX = this.props.match.params.id
+    const rdsIDX = this.props.match.params.id
     const props = this.genFieldListProps()
     const showKeyFileds = !!props.dataSource.length
-    
+    const connInfo = this.props.getConnInfo(rdsIDX)
+    const select = this.props.getSelect(connInfo.id)
     return(
       <Col className="key-detail" span={18}>
         {showKeyFileds ? <Col className="key-fields" span={6}><List {...props} /></Col> : ''}
         <Col className="fields-value" span={showKeyFileds ? 18 : 24}>
           <Row>
             <TextArea
-              onChange={e => RedisSelectValueChange(redisIDX, e.target.value)}
+              onChange={e => this.props.RedisSelectValueChange(
+                select,
+                connInfo.id,
+                e.target.value,
+              )}
               value={this.getSelectInfo().selectValue}
               autosize={{
                 minRows: 28,
@@ -123,7 +133,12 @@ class  Detail extends React.Component {
           </Row>
           <Row>
             <Button
-              onClick={() => RedisSaveSelectKey(redisIDX) && message.success("Save successful")}
+              // && message.success("Save successful")
+              onClick={() => this.props.RedisSaveSelectKey(
+                rdsIDX,
+                connInfo,
+                select,
+              )}
               type="primary"
             >
               Submit
@@ -143,7 +158,23 @@ class  Detail extends React.Component {
   }
 }
 
-export default connect(state =>  ({
+
+const mapDispatchToProps = dispatch => ({
+  RedisSelectKeyField: (idx, field)=> dispatch(RedisSelectKeyField(idx, field)),
+  RedisSelectValueChange: (idx, value)=> dispatch(RedisSelectValueChange(idx, value)),
+  RedisSaveSelectKey: idx => dispatch(RedisSaveSelectKey(idx))
+})
+
+const mapStateToProps = state => ({
   global: state.global,
   redis: state.redis,
-}))(Detail)
+  getConnInfoByIdx: idx => state.redis.connInfo[idx],
+  getSelect: rdsID => state.redis.select[rdsID],
+})
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(Detail)
+
+

@@ -35,14 +35,14 @@ class DataView extends React.Component {
     const connInfo = this.getRedisConnInfo()
     const filterKey = e.target.value
     
-    SetFilterKey(connInfo.id, filterKey)
+    this.props.SetFilterKey(connInfo.id, filterKey)
   }
   
   onSearchKeyChange(e) {
     const connInfo = this.getRedisConnInfo()
     const searchKey = e.target.value
 
-    SetSearchKey(connInfo.id, searchKey)
+    this.props.SetSearchKey(connInfo.id, searchKey)
   }
   
   renderKeyListFooter() {
@@ -63,8 +63,9 @@ class DataView extends React.Component {
     this.setState({
       loading: true,
     })
-    
-    await SearchKeys(this.getRedisSearchKey())
+    const connInfo = this.props.getConnInfo(this.props.global.activeTabKey) || {}
+   
+    await this.props.SearchKeys(connInfo, this.getRedisSearchKey())
 
     this.setState({
       loading: false,
@@ -142,9 +143,9 @@ class DataView extends React.Component {
   }
 
   onClickListItem(e, item) {
-    const redisIDX = this.props.match.params.id
+    const rdsIDX = this.props.match.params.id
     
-    SearchKeyDetail(redisIDX, item)
+    this.props.SearchKeyDetail(this.props.getConnInfo(rdsIDX), item)
   }
 
   renderKeyListItem(item) {
@@ -189,7 +190,24 @@ class DataView extends React.Component {
   }
 } 
 
-export default connect(state => ({
+const mapDispatchToProps = dispatch => ({
+  SearchKeys: (connInfo, searchKey) => SearchKeys(connInfo, searchKey, dispatch),
+  SetFilterKey: () => dispatch(SetFilterKey),
+  SetSearchKey: () => dispatch(SetSearchKey),
+  SearchKeyDetail: (connInfo, item, field) => dispatch(SearchKeyDetail(connInfo,item,field)),
+})
+
+const mapStateToProps = state => ({
   global: state.global,
   redis: state.redis,
-}))(DataView)
+  getConnInfo: idx => state.redis.connInfo[idx],
+  getSelect: rdsID => state.redis.select[rdsID],
+})
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(DataView)
+
+
+
