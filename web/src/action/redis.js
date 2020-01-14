@@ -54,7 +54,7 @@ export const ConnectToRedis = (newConnInfo, callback) => async dispatch => {
   }
 }
 
-export const DisconnectRedis = async (idx, callback) => dispatch => { 
+export const DisconnectRedis = idx => dispatch => { 
   dispatch({
     type: REDIS_DISCONNECT,
     rdsIdx: idx,

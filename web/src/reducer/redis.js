@@ -41,7 +41,6 @@ const initState = {
 export default (state = initState, action) => {
   const {
     type,
-    connInfo,
     keys,
     key,
     keyValue,
@@ -55,7 +54,11 @@ export default (state = initState, action) => {
 
   switch (type) {
     case REDIS_DISCONNECT:
-      state.connInfo.splice(rdsIdx, 1)
+      const arr = state.connInfo.splice(rdsIdx, 1)
+      if (arr.length) {
+        // TODO - disconnect
+      }
+      
       return Object.assign({}, state)
     case REDIS_CONNECT:
       state.connInfo.push(newConnInfo)

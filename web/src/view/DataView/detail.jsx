@@ -21,13 +21,7 @@ import './detail.scss'
 
 const { TextArea } = Input;
 
-class Detail extends React.Component {
- 
-  constructor(props) {
-    super(props)
-    console.log(this.props,'_______')
-  }
-  
+class Detail extends React.Component { 
   getRedisConnInfo() {
     const idx = this.props.match.params.id
 
@@ -119,7 +113,12 @@ class Detail extends React.Component {
     const props = this.genFieldListProps()
     const showKeyFileds = !!props.dataSource.length
     const connInfo = this.props.getConnInfo(rdsIDX)
+    if (!connInfo) {
+      return <div />
+    }
+    
     const select = this.props.getSelect(connInfo.id)
+
     return(
       <Col className="key-detail" span={18}>
         {showKeyFileds ? <Col className="key-fields" span={6}><List {...props} /></Col> : ''}
@@ -132,7 +131,7 @@ class Detail extends React.Component {
                 e.target.value,
               )}
               value={this.getSelectInfo().selectValue}
-              autosize={{
+              autoSize={{
                 minRows: 28,
                 maxRows: 28,
               }}
@@ -157,11 +156,7 @@ class Detail extends React.Component {
   }
 
   render() {
-    const {
-      key,
-    } = this.getSelectInfo()
-
-    return !key ? <div /> : this.renderDetail()
+    return !this.getSelectInfo() ? <div /> : this.renderDetail()
   }
 }
 
@@ -176,7 +171,7 @@ const mapStateToProps = state => ({
   global: state.global,
   redis: state.redis,
   router: state.router,
-  getConnInfoByIdx: idx => state.redis.connInfo[idx],
+  getConnInfo: idx => state.redis.connInfo[idx],
   getSelect: rdsID => state.redis.select[rdsID],
 })
 

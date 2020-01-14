@@ -192,8 +192,8 @@ class DataView extends React.Component {
 
 const mapDispatchToProps = dispatch => ({
   SearchKeys: (connInfo, searchKey) => SearchKeys(connInfo, searchKey, dispatch),
-  SetFilterKey: () => dispatch(SetFilterKey),
-  SetSearchKey: () => dispatch(SetSearchKey),
+  SetFilterKey: (rdsID, key) => dispatch(SetFilterKey(rdsID, key)),
+  SetSearchKey: (rdsID, key) => dispatch(SetSearchKey(rdsID, key)),
   SearchKeyDetail: (connInfo, item, field) => dispatch(SearchKeyDetail(connInfo,item,field)),
 })
 
