@@ -14,7 +14,7 @@ import {
   ConnectToRedis,
 } from '../../actions/redis'
 
-import {
+import { 
   AddConnectConfig,
   DelConnectConfig,
 } from '../../actions/global'
@@ -262,9 +262,18 @@ class ConnView extends  React.Component {
 
 const WrappedConnView = Form.create({
   name: 'horizontal_login',
-})(ConnView);
+})(ConnView)
 
-export default withRouter(connect(state => ({
+const mapDispatchToProps = dispatch => ({
+
+})
+
+const mapStateToProps = state => ({
   global: state.global,
   redis: state.redis,
-}))(WrappedConnView))
+})
+
+export default withRouter(connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(WrappedConnView))

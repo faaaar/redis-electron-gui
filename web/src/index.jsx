@@ -14,11 +14,11 @@ import {
 import store from './store'
 
 import {
-  DisconnectRedis,
+  DisconnectRedis, 
 } from './actions/redis'
 
 import {
-  GetConnectConfig,
+  GetConnectConfig, 
   SwitchTabs,
 } from './actions/global'
 
