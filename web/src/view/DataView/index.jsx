@@ -8,17 +8,16 @@ import {
   Select,
   Icon,
   Tooltip,
+  Modal,
 } from 'antd'
 import Detail from './detail'
 
 import {
   SearchKeys,
-  SetFilterKey,
-  SetSearchKey,
   SearchKeyDetail,
 } from '@action/redis'
-
-import './index.scss'
+import KeyList from './components/KeyList'
+import KeyValueModal from './components/KeyValueModal'
 
 const Option = Select.Option
 
@@ -28,172 +27,80 @@ class DataView extends React.Component {
 
     this.state = {
       loading: false,
+      showModal: false,
+      modalData: {},
     }
   }
-
-  onPressToFilte(e) {
-    const connInfo = this.getRedisConnInfo()
-    const filterKey = e.target.value
-    
-    this.props.SetFilterKey(connInfo.id, filterKey)
-  }
   
-  onSearchKeyChange(e) {
-    const connInfo = this.getRedisConnInfo()
-    const searchKey = e.target.value
-
-    this.props.SetSearchKey(connInfo.id, searchKey)
-  }
-  
-  renderKeyListFooter() {
-    return (
-      <Row className="list-footer">
-        <Col>
-          <Select defaultValue="0">
-            {
-              [0,1,2,3,4,5,6,7,8,9].map(i => <Option key={i} value={i}>{i}</Option>)
-            }
-          </Select>
-        </Col>
-      </Row>
-    )
-  }
-
-  async onClickToSearch() {
+  async onSearch(connInfo, searchKey) {
     this.setState({
       loading: true,
     })
-    const connInfo = this.props.getConnInfo(this.props.currAlias) || {}
 
-    await this.props.SearchKeys(connInfo, this.getRedisSearchKey())
+    console.log(connInfo," ++++++")
+    await this.props.SearchKeys(connInfo, searchKey)
 
     this.setState({
       loading: false,
     })
   }
-
-  getRedisConnInfo() {
-    const idx = this.props.match.params.id
-
-    return this.props.connInfoList[idx] || {}
+  
+  onSelect(connInfo, item) {
+    this.props.SearchKeyDetail(connInfo, item)
   }
 
-  getRedisSearchKey() {
-    const connInfo = this.getRedisConnInfo()
-    
-    return this.props.searchKey[connInfo.id]
-  }
-
-  getRedisFilterKey() {
-    const connInfo = this.getRedisConnInfo()
-    
-    return this.props.filterKey[connInfo.id]
-  }
-
-  getRedisKeys() {
-    const connInfo = this.getRedisConnInfo()
-    const filter = this.getRedisFilterKey() || ''
-    
-    let arr = (this.props.keys[connInfo.id] || [])
-
-    const filterArray = filter.split(' ')
-
-    filterArray.forEach(filter => {
-      arr = this.fuzzyQuery(arr, filter)
-    })
-    
-    return arr.slice(0, 100)
-  }
-
-  fuzzyQuery(list, keyWord) {
-    var arr = [];
-    for (var i = 0; i < list.length; i++) {
-      if (list[i].key.match(keyWord) != null) {
-        arr.push(list[i]);
-      }
+  renderModal() { 
+    if (!this.state.showModal) {
+      return <div />
     }
-    return arr;
+    
+    return (
+      <Modal
+        title="Reids Config"
+        visible={this.state.showModal}
+        mask={true}
+        maskClosable={false}
+        footer={null}
+        onCancel={() => this.setState({
+          showModal: false,
+          modalData: {},
+          isEdit: false,
+        })}
+      >
+        <KeyValueModal
+          isEdit={this.state.isEdit}
+          submit={data => this.props.AddConnectConfig(data)}
+          data={this.state.modalData}
+        />
+      </Modal>
+    )
   }
   
-  renderKeyListHeader() {
-    const searchKey = this.getRedisSearchKey()
-    
-    return (
-      <div className="list-header">
-        <div className="search">
-          <Input
-            value={searchKey}
-            onChange={e => this.onSearchKeyChange(e)}
-            type="text"
-            placeholder="Key name, support regexp."
-            prefix={<Icon type="search" />}
-            onPressEnter={() => this.onClickToSearch()}
-          />
-        </div>
-        <div className="filter">
-          <Input
-            type="text"
-            placeholder="Key name, support regexp."
-            prefix={<Icon type="filter" />}
-            onPressEnter={e => this.onPressToFilte(e)}
-          />
-        </div>
-      </div>
-    )
-  }
-
-  onClickListItem(e, item) {
-    const rdsIDX = this.props.match.params.id
-    
-    this.props.SearchKeyDetail(this.props.getConnInfo(rdsIDX), item)
-  }
-
-  renderKeyListItem(item) {
-    const connInfo = this.getRedisConnInfo()
-    const isSelectMe = item.key === (this.props.select[connInfo.id] || {}).key 
-    
-    return (
-      <Tooltip mouseEnterDelay={0.5} title={item.key}>
-        <List.Item
-          className={`list-item ${isSelectMe ? 'selected' : ''}`}
-          onClick={e => this.onClickListItem(e, item)}
-        >
-          <span className={`type ${item.type}`}>{item.type}</span>
-          <span className="key">{item.key}</span>
-        </List.Item>
-      </Tooltip>
-    )
-  }
-
   render() {
-    const data = this.getRedisKeys()
-
+    const connInfo = this.props.getCurrConn() || {}
+    const data = this.props.keys[connInfo.id] || []
+    
     return (
-      <div className="data-view">
-        <Row className="container">
-          <Col className="key-tree" span={6}>
-            <List
-              loading={this.state.loading}
-              className="key-list"
-              size="small"
-              header={this.renderKeyListHeader()}
-              bordered
-              dataSource={data}
-              renderItem={item => this.renderKeyListItem(item)}
-            />
-            {this.renderKeyListFooter()}
-          </Col>
-          <Detail />
-        </Row>
-      </div>
+      <Row>
+        <Col span={6}>
+          <KeyList
+            loading={this.state.loading}
+            data={data}
+            onSearch={searchKey => this.onSearch(connInfo, searchKey)}
+            onSelect={item => this.onSelect(connInfo, item)}
+          />
+        </Col>
+        <Col span={18}>
+
+        </Col>
+        {/* <Detail /> */}
+      </Row>
     )
   }
 } 
 
 const mapDispatchToProps = dispatch => ({
   SearchKeys: (connInfo, searchKey) => SearchKeys(connInfo, searchKey, dispatch),
-  SetFilterKey: (rdsID, key) => dispatch(SetFilterKey(rdsID, key)),
-  SetSearchKey: (rdsID, key) => dispatch(SetSearchKey(rdsID, key)),
   SearchKeyDetail: (connInfo, item, field) => dispatch(SearchKeyDetail(connInfo,item,field)),
 })
 
@@ -201,12 +108,11 @@ const mapStateToProps = state => ({
   currAlias: state.global.currAlias,
   connectConfig: state.global.connectConfig,
   connInfoList: state.redis.connInfoList,
-  searchKey: state.redis.searchKey,
-  filterKey: state.redis.filterKey,
   select: state.redis.select,
   keys: state.redis.keys,
 
-  getConnInfo: idx => state.redis.connInfoList[idx],
+  getCurrConn: () => state.redis.connInfoList[state.global.currAlias],
+  getConnInfo: alias => state.redis.connInfoList[alias],
   getSelect: rdsID => state.redis.select[rdsID],
 })
 

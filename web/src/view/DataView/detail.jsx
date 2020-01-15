@@ -16,8 +16,6 @@ import {
   RedisSaveSelectKey,
 }  from '@action/redis'
 
-import './detail.scss'
-
 const { TextArea } = Input;
 
 class Detail extends React.Component { 

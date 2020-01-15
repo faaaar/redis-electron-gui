@@ -6,26 +6,8 @@ export const REDIS_CONNECT = 'REDIS_CONNECT'
 export const REDIS_DISCONNECT = 'REDIS_DISCONNECT'
 export const REDIS_KEYS = 'REDIS_KEYS'
 export const REDIS_SCAN = 'REDIS_SCAN'
-export const REDIS_SEARCH_KEY_SET = 'REDIS_SEARCH_KEY_SET'
-export const REDIS_FILTER_KEY_SET = 'REDIS_FILTER_KEY_SET'
 export const REDIS_KEY_DETAIL = 'REDIS_KEY_DETAIL'
 export const REDIS_EDIT_KEY = 'REDIS_EDIT_KEY'
-
-export const SetFilterKey = (redisID, key) => dispatch => {
-  dispatch({
-    type: REDIS_FILTER_KEY_SET,
-    key,
-    redisID,
-  })
-}
-
-export const SetSearchKey = (redisID, key) => dispatch => {
-  dispatch({
-    type: REDIS_SEARCH_KEY_SET,
-    key,
-    redisID,
-  })
-}
 
 export const ConnectToRedis = async (connInfo, dispatch) => {
   const redisOption = {
@@ -40,18 +22,15 @@ export const ConnectToRedis = async (connInfo, dispatch) => {
   if (pong === 'PONG') {
     connInfo.id = CryptoJS.MD5(`${JSON.stringify(connInfo)}_${new Date().getTime()}`).toString()
     connInfo.redis = redis
-    // const connInfoList = store.getState().redis.connInfoList
-    // connInfoList.push(newConnInfo)
 
+    console.log(dispatch)
+    
     dispatch({ 
       type: REDIS_CONNECT,
       connInfo,
     })
 
-    // const idx = `${connInfoList.length - 1}`
-    console.log(connInfo)
     dispatch(SwitchRedis(connInfo.alias))
-    // callback(idx)
   }
 }
 

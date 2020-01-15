@@ -2,8 +2,6 @@ import {
   REDIS_CONNECT,
   REDIS_DISCONNECT,
   REDIS_SCAN,
-  REDIS_FILTER_KEY_SET,
-  REDIS_SEARCH_KEY_SET,
   REDIS_KEY_DETAIL,
 } from '@action/redis'
 
@@ -70,23 +68,7 @@ export default (state = initState, action) => {
       
       return Object.assign({}, state, {
         keys: keysTmp,
-      })
-    case REDIS_SEARCH_KEY_SET:
-      const searchKeyTmp = state.searchKey
-
-      searchKeyTmp[redisID] = key
-
-      return Object.assign({}, state, {
-        searchKey: searchKeyTmp,
-      })
-    case REDIS_FILTER_KEY_SET:
-      const filterKeyTmp = state.filterKey
-      
-      filterKeyTmp[redisID] = key
-      
-      return Object.assign({}, state, {
-        filterKey: filterKeyTmp,
-      }) 
+      })  
     case REDIS_KEY_DETAIL:
       const nextSelect = state.select
       
