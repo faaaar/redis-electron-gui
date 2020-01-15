@@ -80,95 +80,73 @@ export const SearchKeys = async (connInfo, searchKey, dispatch) => new Promise(r
   })
 })
 
-export const SearchKeyDetail = (connInfo, item, field) => async dispatch => {
+export const SearchKeyDetail = async (connInfo, item) => {
   const {
     key,
     type,
   } = item
-  const redisID = connInfo.id
   const redis = connInfo.redis
-  let keyValue = []
-  let selectField = ''
-  let selectValue = ''
+  let value = []
   
   switch(type) {
     case 'string':
-      keyValue = await redis.get(key)
-      selectValue = keyValue
+      value = await redis.get(key)
       
       break
     case 'hash':
-      keyValue = await redis.hgetall(key)
-      
-      for (let k in keyValue) {
-        selectField = field || k
-        selectValue = keyValue[k]
-
-        break
-      }
+      value = await redis.hgetall(key)          
       
       break
     case 'list':
-      keyValue = await redis.lrange(key, 0, -1)
-
-      if (keyValue.length > 0) {
-        selectField = field || 0
-        selectValue = keyValue[0]
-      }
+      value = await redis.lrange(key, 0, -1)    
       
       break
     case 'set':
-      keyValue = await redis.smembers(key)
-      if (keyValue.length > 0) {
-        selectField = 0
-        selectValue = keyValue[0]
-      }
+      value = await redis.smembers(key)     
       
       break
     case 'zset':
-      keyValue = await redis.zrange(key, 0, -1, 'WITHSCORES')
+      value = await redis.zrange(key, 0, -1, 'WITHSCORES')      
 
-      if (keyValue.length >= 2) {
-        selectField = field || 0
-        selectValue = keyValue[selectField*2]
+      const nextValue = {}
+      for (let i=0;i<value.length;i+=2) {
+        nextValue[value[i]] = Number(value[i+1])
       }
+      
+      value=nextValue
       
       break
     default:
-      return
+      return {}
   }
 
-  dispatch({
-    type: REDIS_KEY_DETAIL,
-    redisID,
+  return {
     key,
-    keyValue,
-    keyType: type,
-    selectField,
-    selectValue,
-  })
+    value,
+    type,
+  }
 } 
 
-export const RedisSelectKeyField = (select, rdsID, selectField) => dispatch => { 
-  select.selectField = selectField
-  switch(select.keyType) {
+export const RedisSelectKeyField = (select, rdsID, field) => dispatch => { 
+  select.field = field
+  switch(select.type) {
     case 'string':
-      select.selectValue = select.keyValue
+      select.selectValue = select.value
       break
     case 'hash':
-      select.selectValue = select.keyValue[selectField]
+      select.selectValue = select.value[field]
       break
     case 'zset':
-      select.selectValue = select.keyValue[selectField*2]
+      select.selectValue = select.value[field*2]
       break
     case 'set':
-      select.selectValue = select.keyValue[selectField]
+      select.selectValue = select.value[field]
       break
     case 'list':
-      select.selectValue = select.keyValue[selectField]
+      select.selectValue = select.value[field]
       break
     default:
-      console.error(`NO KEY TYPE ----- ${select.keyType}`)
+      console.error(`NO KEY TYPE ----- ${select.type}`)
   }
   
   dispatch({
@@ -193,40 +171,40 @@ export const RedisSaveSelectKey = (rdsIDX, connInfo, select) => dispatch => {
   
   const {
     key,
-    keyType,
-    keyValue,
-    selectField,
+    type,
+    value,
+    field,
     selectValue,
   } = select
   
-  switch(keyType) {
+  switch(type) {
     case 'string':
       redis.set(key, selectValue)
       break
     case 'list':
-      redis.lset(key, selectField, selectValue)
+      redis.lset(key, field, selectValue)
       break
     case 'hash':
-      redis.hset(key, selectField, selectValue)
+      redis.hset(key, field, selectValue)
       break
     case 'zset':
       redis.multi()
-        .zrem(key, keyValue[selectField*2])
-        .zadd(key, keyValue[selectField*2+1], selectValue)
+        .zrem(key, value[field*2])
+        .zadd(key, value[field*2+1], selectValue)
         .exec()
       break
     case 'set':
       redis.multi()
-        .srem(key, keyValue[selectField])
+        .srem(key, value[field])
         .sadd(key, selectValue)
         .exec()
       break
     default:
-      console.error(`NO KEY TYPE ----- ${select.keyType}`)
+      console.error(`NO KEY TYPE ----- ${select.type}`)
   }
 
   dispatch(SearchKeyDetail(rdsIDX, {
     key,
-    type: keyType,
-  }, selectField))
+    type: type,
+  }, field))
 }

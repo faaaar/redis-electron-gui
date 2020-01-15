@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { List, Input, Icon, Tooltip } from 'antd'
-
+import './index.scss'
 
 const getRedisKeys = (keys, filter) => {
   const filterArray = filter.split(' ')
@@ -19,6 +19,14 @@ const getRedisKeys = (keys, filter) => {
   return keys.slice(0, 100)
 }
 
+const colorSet = {
+  "string": "blue",
+  "hash": "green",
+  "set": "#ff6700",
+  "zset": "red",
+  "list": "orange",
+}
+
 const KeyList = props => {
   const loading = props.loading
   const onSearch = props.onSearch
@@ -30,12 +38,13 @@ const KeyList = props => {
   
   return (
     <List
+      className="app-key-list"
       loading={loading}
       size="small"
       bordered
       dataSource={data}
       header={
-        <>
+        <>       
           <div>
             <Input
               value={searchKey}
@@ -57,15 +66,44 @@ const KeyList = props => {
           </div>
         </>
       }
-      renderItem={item => {        
+      renderItem={item => {
+        const backgroundColor = colorSet[item.type]
         return (
           <Tooltip mouseEnterDelay={0.5} title={item.key}>
             <List.Item
-              style={{cursor: "pointer"}}
+              style={{
+                cursor: "pointer",
+                display: "flex",
+                flexFlow: "row nowrap",
+              }}
               onClick={e => onSelect(item)}
             >
-              <span>{item.type}</span>
-              <span>{item.key}</span>
+              <span
+                style={{
+                  backgroundColor,
+                  width: "20%",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  cursor: "28px",
+                  borderRadius: "16px",
+                  color: "#fff",
+                  fontWeight: "700",
+                  marginRight: "4px",
+                }}
+              >
+                {item.type}
+              </span>
+              <span
+                style={{
+                  width: "80%",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                {item.key}
+              </span>
             </List.Item>
           </Tooltip>
         )

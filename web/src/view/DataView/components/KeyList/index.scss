@@ -1,0 +1,12 @@
+.app-key-list {
+  height: 100vh;
+
+  .ant-list-header {
+    height: 90px;
+  }
+
+  .ant-list-items {
+    height: calc(100vh - 90px);
+    overflow-y: scroll;
+  }
+}

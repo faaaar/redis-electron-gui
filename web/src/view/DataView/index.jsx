@@ -17,7 +17,7 @@ import {
   SearchKeyDetail,
 } from '@action/redis'
 import KeyList from './components/KeyList'
-import KeyValueModal from './components/KeyValueModal'
+import KeyDetail from './components/KeyDetail'
 
 const Option = Select.Option
 
@@ -29,6 +29,7 @@ class DataView extends React.Component {
       loading: false,
       showModal: false,
       modalData: {},
+      selectData: {},
     }
   }
   
@@ -37,7 +38,6 @@ class DataView extends React.Component {
       loading: true,
     })
 
-    console.log(connInfo," ++++++")
     await this.props.SearchKeys(connInfo, searchKey)
 
     this.setState({
@@ -45,8 +45,12 @@ class DataView extends React.Component {
     })
   }
   
-  onSelect(connInfo, item) {
-    this.props.SearchKeyDetail(connInfo, item)
+  async onSelect(connInfo, item) {
+    const obj = await this.props.SearchKeyDetail(connInfo, item)
+
+    this.setState({
+      selectData: obj,
+    })
   }
 
   renderModal() { 
@@ -67,7 +71,7 @@ class DataView extends React.Component {
           isEdit: false,
         })}
       >
-        <KeyValueModal
+        <KeyDetail
           isEdit={this.state.isEdit}
           submit={data => this.props.AddConnectConfig(data)}
           data={this.state.modalData}
@@ -81,27 +85,30 @@ class DataView extends React.Component {
     const data = this.props.keys[connInfo.id] || []
     
     return (
-      <Row>
-        <Col span={6}>
-          <KeyList
-            loading={this.state.loading}
-            data={data}
-            onSearch={searchKey => this.onSearch(connInfo, searchKey)}
-            onSelect={item => this.onSelect(connInfo, item)}
-          />
-        </Col>
-        <Col span={18}>
-
-        </Col>
-        {/* <Detail /> */}
-      </Row>
+      <div>
+        <Row>
+          <Col span={6}>
+            <KeyList
+              loading={this.state.loading}
+              data={data}
+              onSearch={searchKey => this.onSearch(connInfo, searchKey)}
+              onSelect={item => this.onSelect(connInfo, item)}
+            />
+          </Col>
+          <Col span={18}>
+            <KeyDetail
+              data={this.state.selectData}
+            />
+          </Col>
+        </Row>
+      </div>
     )
   }
 } 
 
 const mapDispatchToProps = dispatch => ({
   SearchKeys: (connInfo, searchKey) => SearchKeys(connInfo, searchKey, dispatch),
-  SearchKeyDetail: (connInfo, item, field) => dispatch(SearchKeyDetail(connInfo,item,field)),
+  SearchKeyDetail: async (connInfo, item, field) => await SearchKeyDetail(connInfo,item,field),
 })
 
 const mapStateToProps = state => ({
