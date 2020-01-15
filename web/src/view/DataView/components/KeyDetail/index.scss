@@ -1,0 +1,49 @@
+.app-key-detail {
+  height: 100vh;
+  width: 100%;
+  
+  .detail-header {
+    height: 90px;
+    width: 100%;
+    background: red;       
+  }
+
+  .detail-container, .field-list {
+    height: calc(100vh - 90px);
+  }
+
+  .ant-list-items {
+    height: calc(100vh - 90px);
+    overflow-y: scroll;
+    
+    .ant-list-item{
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      
+      &:hover {
+        background: #ccc;
+      }
+
+      p {
+        display: flex;
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+      
+      .text {
+        flex: 1;
+        cursor: pointer;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .delete:hover {
+        color: #ff6700;
+      }
+    }
+  }
+}

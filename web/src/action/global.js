@@ -45,11 +45,10 @@ export const AddConnectConfig = newConfig => async dispatch => {
     data: newConfig,
   })
 
-  console.log(connectConfig)
   dispatch(UpdateConnectConfig(connectConfig))
 }
 
-export const DelConnectConfig = alias => async dispatch =>{
+export const DelConnectConfig = alias => async dispatch => {
   const connectConfig = await ipc.send({
     type: EVENTS.DEL_CONNECT_CONFIG,
     data: alias,

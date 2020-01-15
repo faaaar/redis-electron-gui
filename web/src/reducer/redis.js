@@ -49,20 +49,18 @@ export default (state = initState, action) => {
     rdsIdx,
     connInfo,
   } = action
+  const keysTmp = state.keys
+  const nextSelect = state.select
 
   switch (type) {
     case REDIS_DISCONNECT:
-      const arr = state.connInfoList.splice(rdsIdx, 1)
-      if (arr.length) {
-        // TODO - disconnect
-      }
+      state.connInfoList.splice(rdsIdx, 1)
       
       return Object.assign({}, state)
     case REDIS_CONNECT:
       state.connInfoList[connInfo.alias] = connInfo
       return Object.assign({}, state)
     case REDIS_SCAN:
-      const keysTmp = state.keys
       
       keysTmp[redisID] = keys
       
@@ -70,7 +68,6 @@ export default (state = initState, action) => {
         keys: keysTmp,
       })  
     case REDIS_KEY_DETAIL:
-      const nextSelect = state.select
       
       nextSelect[redisID] = {
         key,

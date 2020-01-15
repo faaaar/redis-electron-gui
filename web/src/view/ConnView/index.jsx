@@ -8,7 +8,7 @@ import {
   Input,
   Button,
   Modal,
-} from 'antd';
+} from 'antd'
 import { ConnectToRedis } from '@action/redis'
 import { AddConnectConfig, DelConnectConfig, GetConnectConfig } from '@action/global'
 
@@ -46,24 +46,24 @@ const AuthRules = [{
   message: 'Please input your auth',
 }]
 
-const ADD_TO_FAVORITE = "ADD_TO_FAVORITE"
-const CHANGE_FAVORITE = "CHANGE_FAVORITE"
+const ADD_TO_FAVORITE = 'ADD_TO_FAVORITE'
+const CHANGE_FAVORITE = 'CHANGE_FAVORITE'
 
 class ConnView extends  React.Component {
-   componentDidMount() {
-     this.props.GetConnectConfig()
+  componentDidMount() {
+    this.props.GetConnectConfig()
   }
 
   
   onClickConnectToRedis(e) {
-    e.preventDefault();
+    e.preventDefault()
     this.props.form.validateFieldsAndScroll(err => {
       if (!err) {
-        this.props.ConnectToRedis({...this.props.form.getFieldsValue()}, id => {
+        this.props.ConnectToRedis({ ...this.props.form.getFieldsValue() }, id => {
           this.props.history.push('/view/' + id)
         })
       }
-    });
+    })
   }
 
   updateConnectConfig(type) {
@@ -71,7 +71,7 @@ class ConnView extends  React.Component {
     
     const isChange = type === CHANGE_FAVORITE
     const connectConfig = this.getConnectConfig()
-    const fieldsValue = {...this.props.form.getFieldsValue()}
+    const fieldsValue = { ...this.props.form.getFieldsValue() }
     this.props.form.validateFieldsAndScroll(err => {
       if (!err) {
         if (isChange && connectConfig[alias]) {
@@ -119,7 +119,7 @@ class ConnView extends  React.Component {
     
     Modal.confirm({
       title: `The \`${alias}\` will be deleted`,
-      content: `continue?`,
+      content: 'continue?',
       onOk() {
         this.props.DelConnectConfig(alias)
       },
@@ -129,16 +129,16 @@ class ConnView extends  React.Component {
 
   renderSaveBtn() {
     const connectConfig = this.getConnectConfig()
-    const alias = this.props.form.getFieldValue("alias")
-    const host = this.props.form.getFieldValue("host")
-    const auth = this.props.form.getFieldValue("auth")
-    const port = this.props.form.getFieldValue("port")
+    const alias = this.props.form.getFieldValue('alias')
+    const host = this.props.form.getFieldValue('host')
+    const auth = this.props.form.getFieldValue('auth')
+    const port = this.props.form.getFieldValue('port')
 
-    let disabled = alias === "" || connectConfig[alias] 
+    let disabled = alias === '' || connectConfig[alias] 
     if (connectConfig[alias]) {
-      disabled = disabled && (host === "" || connectConfig[alias]['host'] === host)
-      disabled = disabled && (port === "" || connectConfig[alias]['port'] === port)
-      disabled = disabled && (auth === "" || connectConfig[alias]['auth'] === auth)
+      disabled = disabled && (host === '' || connectConfig[alias]['host'] === host)
+      disabled = disabled && (port === '' || connectConfig[alias]['port'] === port)
+      disabled = disabled && (auth === '' || connectConfig[alias]['auth'] === auth)
     }
     
     return (
@@ -203,7 +203,7 @@ class ConnView extends  React.Component {
   
   render() {
     const connectKeyList = Object.keys(this.getConnectConfig())
-    const { getFieldDecorator } = this.props.form;
+    const { getFieldDecorator } = this.props.form
     const formItemLayout = {
       labelCol: { span: 3 },
       wrapperCol: { span: 21 },
@@ -227,19 +227,19 @@ class ConnView extends  React.Component {
           <Col className="config-panel" span={18}>
             <Form className="config-form">
               <FormItem {...formItemLayout} label="Alias">
-                {getFieldDecorator('alias', {rules: AliasRules, initialValue: ''})(<Input />)}
+                {getFieldDecorator('alias', { rules: AliasRules, initialValue: '' })(<Input />)}
               </FormItem>
               
               <FormItem {...formItemLayout} label="Host">
-                {getFieldDecorator('host', {rules: HostRules, initialValue: ''})(<Input />)}
+                {getFieldDecorator('host', { rules: HostRules, initialValue: '' })(<Input />)}
               </FormItem>
               
               <FormItem {...formItemLayout} label="Port">
-                {getFieldDecorator('port', {rules: PortRules, initialValue: ''})(<Input />)}
+                {getFieldDecorator('port', { rules: PortRules, initialValue: '' })(<Input />)}
               </FormItem>
               
               <FormItem {...formItemLayout} label="Auth">
-                {getFieldDecorator('auth', {rules: AuthRules})(<Input type="password" />)}
+                {getFieldDecorator('auth', { rules: AuthRules })(<Input type="password" />)}
               </FormItem>
               
               <FormItem {...formItemLayout} colon={false} className="form-btn" label=" ">
@@ -266,7 +266,7 @@ const mapDispatchToProps = dispatch => ({
   ConnectToRedis: (newConnInfo, callback) => dispatch(ConnectToRedis(newConnInfo, callback)),
   AddConnectConfig: newConfig => dispatch(AddConnectConfig(newConfig)),
   DelConnectConfig: alias => dispatch(DelConnectConfig(alias)),
-  GetConnectConfig: () => dispatch(GetConnectConfig())
+  GetConnectConfig: () => dispatch(GetConnectConfig()),
 })
 
 const mapStateToProps = state => ({

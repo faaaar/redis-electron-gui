@@ -1,25 +1,9 @@
 import React from 'react'
-import {connect} from 'react-redux'
-import {
-  Row,
-  Col,
-  Input,
-  List,
-  Select,
-  Icon,
-  Tooltip,
-  Modal,
-} from 'antd'
-import Detail from './detail'
-
-import {
-  SearchKeys,
-  SearchKeyDetail,
-} from '@action/redis'
+import { connect } from 'react-redux'
+import { Row, Col, Modal } from 'antd'
+import { SearchKeys, SearchKeyDetail } from '@action/redis'
 import KeyList from './components/KeyList'
 import KeyDetail from './components/KeyDetail'
-
-const Option = Select.Option
 
 class DataView extends React.Component {
   constructor(props) {
@@ -29,7 +13,19 @@ class DataView extends React.Component {
       loading: false,
       showModal: false,
       modalData: {},
-      selectData: {},
+      showDetail: false,
+      value: {
+        ttl: -1,
+        type: '',
+        value: '',
+        field: '',
+        fieldList: [],
+        memberList: [],
+        values: {},
+        key: '',
+        score: '',
+        member: '',
+      },
     }
   }
   
@@ -48,8 +44,36 @@ class DataView extends React.Component {
   async onSelect(connInfo, item) {
     const obj = await this.props.SearchKeyDetail(connInfo, item)
 
+    const type = obj.type
+    const values = obj.values
+    let fieldList = []
+    let memberList = []
+    
+    switch(type) {
+      case 'set':
+      case 'list':
+        fieldList = values
+        break
+      case 'zset':
+        memberList = Object.keys(values)
+        break
+      default:
+        fieldList = Object.keys(values)
+        break
+    }
+    
     this.setState({
-      selectData: obj,
+      value: {
+        type,
+        values,
+        ttl: obj.ttl,
+        key: obj.key,
+        value: item.type === "string" ? obj.values : '',
+        fieldList,
+        memberList,
+        field: '',
+        score: 0,
+      },
     })
   }
 
@@ -97,7 +121,15 @@ class DataView extends React.Component {
           </Col>
           <Col span={18}>
             <KeyDetail
-              data={this.state.selectData}
+              save={() => {
+                
+              }}
+              data={[
+                this.state.value,
+                value => {
+                  this.setState({value})
+                },
+              ]}
             />
           </Col>
         </Row>

@@ -1,5 +1,5 @@
 import React from 'react'
-import { Menu, Icon, Modal } from 'antd';
+import { Menu, Icon, Modal } from 'antd'
 import { SwitchRedis, AddConnectConfig, GetConnectConfig } from '@action/global'
 import { DisconnectRedis, ConnectToRedis } from '@action/redis'
 import { connect } from 'react-redux'
@@ -54,7 +54,7 @@ class AppTabs extends React.Component {
         })
         break
       case 'del':
-        break;
+        break
       case 'connect':
         this.props.ConnectToRedis(
           this.props.getConnConfig(alias),
@@ -66,7 +66,7 @@ class AppTabs extends React.Component {
         this.props.SwitchRedis(alias)
         break
       default:
-        console.error("INVALID OPERATE")
+        console.error('INVALID OPERATE')
         break
     }
   }
@@ -144,7 +144,7 @@ const mapStateToProps = state => ({
   connInfoList: state.redis.connInfoList,
   connectConfig: state.global.connectConfig,
   getConnInfo: idx => state.redis.connInfoList[idx],
-  getConnConfig: alias => ({...state.global.connectConfig[alias], alias}),
+  getConnConfig: alias => ({ ...state.global.connectConfig[alias], alias }),
 })
 
 const mapDispatchToProps = dispatch => ({

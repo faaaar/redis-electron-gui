@@ -23,8 +23,6 @@ export const ConnectToRedis = async (connInfo, dispatch) => {
     connInfo.id = CryptoJS.MD5(`${JSON.stringify(connInfo)}_${new Date().getTime()}`).toString()
     connInfo.redis = redis
 
-    console.log(dispatch)
-    
     dispatch({ 
       type: REDIS_CONNECT,
       connInfo,
@@ -86,44 +84,47 @@ export const SearchKeyDetail = async (connInfo, item) => {
     type,
   } = item
   const redis = connInfo.redis
-  let value = []
-  
+  let values = []
+  const nextValue = {}
+
   switch(type) {
     case 'string':
-      value = await redis.get(key)
+      values = await redis.get(key)
       
       break
     case 'hash':
-      value = await redis.hgetall(key)          
+      values = await redis.hgetall(key)          
       
       break
     case 'list':
-      value = await redis.lrange(key, 0, -1)    
+      values = await redis.lrange(key, 0, -1)    
       
       break
     case 'set':
-      value = await redis.smembers(key)     
+      values = await redis.smembers(key)     
       
       break
     case 'zset':
-      value = await redis.zrange(key, 0, -1, 'WITHSCORES')      
-
-      const nextValue = {}
-      for (let i=0;i<value.length;i+=2) {
-        nextValue[value[i]] = Number(value[i+1])
+      values = await redis.zrange(key, 0, -1, 'WITHSCORES')      
+      
+      for (let i=0;i<values.length;i+=2) {
+        nextValue[values[i]] = Number(values[i+1])
       }
       
-      value=nextValue
-      
+      values = nextValue
+
       break
     default:
       return {}
   }
 
+  const ttl = await redis.ttl(key)
+
   return {
     key,
-    value,
+    values,
     type,
+    ttl,
   }
 } 
 
@@ -166,7 +167,7 @@ export const RedisSelectValueChange = (select, rdsID, selectValue) => dispatch =
   })
 }
 
-export const RedisSaveSelectKey = (rdsIDX, connInfo, select) => dispatch => {
+export const RedisSaveSelectKey = async (connInfo, select) => {
   const redis = connInfo.redis
   
   const {
@@ -176,25 +177,27 @@ export const RedisSaveSelectKey = (rdsIDX, connInfo, select) => dispatch => {
     field,
     selectValue,
   } = select
+
+  let response = null
   
   switch(type) {
     case 'string':
-      redis.set(key, selectValue)
+      response = await redis.set(key, selectValue)
       break
     case 'list':
-      redis.lset(key, field, selectValue)
+      response = await redis.lset(key, field, selectValue)
       break
     case 'hash':
-      redis.hset(key, field, selectValue)
+      response = await redis.hset(key, field, selectValue)
       break
     case 'zset':
-      redis.multi()
-        .zrem(key, value[field*2])
-        .zadd(key, value[field*2+1], selectValue)
-        .exec()
+      // response = await redis.multi()
+      //   .zrem(key, value[field*2])
+      //   .zadd(key, value[field*2+1], selectValue)
+      //   .exec()
       break
     case 'set':
-      redis.multi()
+      response = await redis.multi()
         .srem(key, value[field])
         .sadd(key, selectValue)
         .exec()
@@ -203,8 +206,6 @@ export const RedisSaveSelectKey = (rdsIDX, connInfo, select) => dispatch => {
       console.error(`NO KEY TYPE ----- ${select.type}`)
   }
 
-  dispatch(SearchKeyDetail(rdsIDX, {
-    key,
-    type: type,
-  }, field))
+  console.log(response)
+  return true
 }
