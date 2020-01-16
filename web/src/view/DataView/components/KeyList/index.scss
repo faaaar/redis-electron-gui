@@ -9,4 +9,37 @@
     height: calc(100vh - 90px);
     overflow-y: scroll;
   }
+
+  .selected, .ant-list-item:hover {
+    background: #ccc;
+  }
+
+  .ant-list-item {
+    p {
+      display: flex;
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+
+    .type {
+      width: 15%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-radius: 16px;
+      color: rgb(255, 255, 255);
+      font-weight: 700;
+      margin-right: 4px;
+      min-width: 50px;
+    }
+
+    .key {
+      width: 80%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  }
 }

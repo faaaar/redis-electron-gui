@@ -22,7 +22,7 @@ const AliasRules = [{
 }, {
   required: true,
   message: 'Please input your alias',
-  
+
 }]
 
 const HostRules = [{
@@ -54,7 +54,7 @@ class ConnView extends  React.Component {
     this.props.GetConnectConfig()
   }
 
-  
+
   onClickConnectToRedis(e) {
     e.preventDefault()
     this.props.form.validateFieldsAndScroll(err => {
@@ -68,7 +68,7 @@ class ConnView extends  React.Component {
 
   updateConnectConfig(type) {
     const { alias } = this.props.form.getFieldsValue()
-    
+
     const isChange = type === CHANGE_FAVORITE
     const connectConfig = this.getConnectConfig()
     const fieldsValue = { ...this.props.form.getFieldsValue() }
@@ -116,7 +116,7 @@ class ConnView extends  React.Component {
     if (!alias) {
       return
     }
-    
+
     Modal.confirm({
       title: `The \`${alias}\` will be deleted`,
       content: 'continue?',
@@ -134,13 +134,13 @@ class ConnView extends  React.Component {
     const auth = this.props.form.getFieldValue('auth')
     const port = this.props.form.getFieldValue('port')
 
-    let disabled = alias === '' || connectConfig[alias] 
+    let disabled = alias === '' || connectConfig[alias]
     if (connectConfig[alias]) {
       disabled = disabled && (host === '' || connectConfig[alias]['host'] === host)
       disabled = disabled && (port === '' || connectConfig[alias]['port'] === port)
       disabled = disabled && (auth === '' || connectConfig[alias]['auth'] === auth)
     }
-    
+
     return (
       <Button
         disabled={disabled}
@@ -174,7 +174,7 @@ class ConnView extends  React.Component {
     )
   }
 
-  renderDelBtn() {    
+  renderDelBtn() {
     return (
       <Button
         type="danger"
@@ -182,7 +182,7 @@ class ConnView extends  React.Component {
       >
         Delete
       </Button>
-    )    
+    )
   }
 
   renderListHeader() {
@@ -193,14 +193,14 @@ class ConnView extends  React.Component {
 
   renderListItem(item) {
     const isSelectMe = this.props.form.getFieldValue('alias') === item
-    
+
     return (
       <List.Item className={`list-item ${isSelectMe ? 'list-selected' : ''}`} onClick={e => this.onClickConnItem(e, item)}>
         {item}
       </List.Item>
     )
   }
-  
+
   render() {
     const connectKeyList = Object.keys(this.getConnectConfig())
     const { getFieldDecorator } = this.props.form
@@ -208,7 +208,7 @@ class ConnView extends  React.Component {
       labelCol: { span: 3 },
       wrapperCol: { span: 21 },
     }
-    
+
     return (
       <div className="conn-view">
         <Row className="container">
@@ -229,19 +229,19 @@ class ConnView extends  React.Component {
               <FormItem {...formItemLayout} label="Alias">
                 {getFieldDecorator('alias', { rules: AliasRules, initialValue: '' })(<Input />)}
               </FormItem>
-              
+
               <FormItem {...formItemLayout} label="Host">
                 {getFieldDecorator('host', { rules: HostRules, initialValue: '' })(<Input />)}
               </FormItem>
-              
+
               <FormItem {...formItemLayout} label="Port">
                 {getFieldDecorator('port', { rules: PortRules, initialValue: '' })(<Input />)}
               </FormItem>
-              
+
               <FormItem {...formItemLayout} label="Auth">
                 {getFieldDecorator('auth', { rules: AuthRules })(<Input type="password" />)}
               </FormItem>
-              
+
               <FormItem {...formItemLayout} colon={false} className="form-btn" label=" ">
                 <ButtonGroup className="btn-group">
                   {this.renderAddFavoriteBtn()}

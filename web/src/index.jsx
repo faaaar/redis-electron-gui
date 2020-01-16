@@ -2,12 +2,12 @@ import 'react-app-polyfill/jsdom'
 import React from 'react'
 import ReactDOM from 'react-dom'
 import { Provider } from 'react-redux'
-import { Layout } from 'antd'
+import { Layout, message } from 'antd'
 import { BrowserRouter, Route, Switch } from 'react-router-dom'
-import store from './store' 
+import store from './store'
 
 import DataView from '@view/DataView'
-import DevTools from '@view/DevTools' 
+import DevTools from '@view/DevTools'
 import SiderList from '@view/SiderList'
 
 import * as serviceWorker from './serviceWorker'
@@ -18,6 +18,24 @@ const {
   Sider,
 } = Layout
 
+window.alertError = msg => {
+  const content = `Error. ${msg}`
+  message.error({
+    content,
+    key: content,
+    duration: 3,
+  })
+}
+
+window.alertSuccess = msg => {
+  const content = `Done. ${msg || ''}`
+  message.success({
+    content,
+    key: content,
+    duration: 3,
+  })
+}
+
 class App extends React.Component {
   constructor(props) {
     super(props)
@@ -26,7 +44,7 @@ class App extends React.Component {
       collapsed: false,
     }
   }
-   
+
   render() {
     let devTool = process.env.NODE_ENV === 'production' ? '' :  (<div style={{ fontSize: '18px' }}><DevTools /></div>)
 

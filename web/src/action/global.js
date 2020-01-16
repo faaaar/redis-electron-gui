@@ -6,10 +6,10 @@ export const GET_CONNECT_CONFIG = 'GET_CONNECT_CONFIG'
 export const UPDATE_CONNECT_CONFIG = 'UPDATE_CONNECT_CONFIG'
 export const SWITCH_REDIS = 'SWITCH_REDIS'
 
-export const SwitchRedis = currAlias => dispatch => {  
+export const SwitchRedis = currAlias => dispatch => {
   dispatch({
     type: SWITCH_REDIS,
-    currAlias, 
+    currAlias,
   })
 }
 
@@ -35,9 +35,9 @@ export const GetConnectConfig = () => async dispatch => {
   const connectConfig = await ipc.send({
     type: EVENTS.GET_CONNECT_CONFIG,
   })
-  
+
   dispatch(UpdateConnectConfig(connectConfig))
-} 
+}
 
 export const AddConnectConfig = newConfig => async dispatch => {
   const connectConfig = await ipc.send({

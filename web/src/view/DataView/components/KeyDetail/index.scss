@@ -15,15 +15,16 @@
   .ant-list-items {
     height: calc(100vh - 90px);
     overflow-y: scroll;
+
+    .selected, .ant-list-item:hover {
+      background: #ccc;
+    }
     
     .ant-list-item{
       display: flex;
       justify-content: center;
       align-items: center;
-      
-      &:hover {
-        background: #ccc;
-      }
+      padding: 10px;     
 
       p {
         display: flex;

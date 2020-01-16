@@ -8,7 +8,7 @@ const ipc = {
     } = args
 
     console.log('send type data', type ,data)
-    
+
     return new Promise((resolve, reject) => {
       ipc.responseOnce(type, (e, response) => {
         if (!response.error) {
@@ -19,7 +19,7 @@ const ipc = {
       })
 
       ipcRenderer.send(`request_${type}`, data)
-    })  
+    })
   },
   responseOnce: (type, callback) => {
     ipcRenderer.once(`response_${type}`, callback)

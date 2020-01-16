@@ -1,4 +1,4 @@
-import { 
+import {
   REDIS_CONNECT,
   REDIS_DISCONNECT,
   REDIS_SCAN,
@@ -10,7 +10,7 @@ const initState = {
     // alias: {
     //   redisID: '',
     //   alias: '',
-    //   host: '', 
+    //   host: '',
     //   port: '',
     //   auth: '',
     //   client: null,
@@ -55,28 +55,27 @@ export default (state = initState, action) => {
   switch (type) {
     case REDIS_DISCONNECT:
       state.connInfoList.splice(rdsIdx, 1)
-      
+
       return Object.assign({}, state)
     case REDIS_CONNECT:
       state.connInfoList[connInfo.alias] = connInfo
       return Object.assign({}, state)
     case REDIS_SCAN:
-      
       keysTmp[redisID] = keys
-      
+
       return Object.assign({}, state, {
         keys: keysTmp,
-      })  
+      })
     case REDIS_KEY_DETAIL:
-      
+
       nextSelect[redisID] = {
         key,
         keyValue,
         keyType,
         selectField,
         selectValue,
-      } 
-      
+      }
+
       return Object.assign({}, state, {
         select: nextSelect,
       })

@@ -17,7 +17,7 @@ const getRedisKeys = (keys, filter) => {
     }
     keys = nextKeys
   })
-  
+
   return keys.slice(0, 100)
 }
 
@@ -35,18 +35,17 @@ const KeyList = props => {
   const onSelect = props.onSelect
   const [searchKey, setSearchKey] = useState('')
   const [filterKey, setFilterKey] = useState('')
-  
+
   const data = getRedisKeys(props.data, filterKey)
-  
+
   return (
     <List
       className="app-key-list"
       loading={loading}
-      size="small"
       bordered
       dataSource={data}
       header={
-        <>       
+        <>
           <div>
             <Input
               value={searchKey}
@@ -70,43 +69,27 @@ const KeyList = props => {
       }
       renderItem={item => {
         const backgroundColor = colorSet[item.type]
+        const selected = item.key === props.value.key
+
         return (
           <Tooltip mouseEnterDelay={0.5} title={item.key}>
             <ListItem
+              className={selected ? 'selected' : ''}
               style={{
                 cursor: 'pointer',
                 display: 'flex',
                 flexFlow: 'row nowrap',
               }}
-              onClick={e => onSelect(item)}
+              onClick={() => onSelect(item)}
             >
-              <span
-                style={{
-                  backgroundColor,
-                  width: '15%',
-                  display: 'flex',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  cursor: '28px',
-                  borderRadius: '16px',
-                  color: '#fff',
-                  fontWeight: '700',
-                  marginRight: '4px',
-                  minWidth: '50px',
-                }}
-              >
-                {item.type}
-              </span>
-              <span
-                style={{
-                  width: '80%',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  whiteSpace: 'nowrap',
-                }}
-              >
-                {item.key}
-              </span>
+              <p>
+                <span style={{ backgroundColor }} className="type">
+                  {item.type}
+                </span>
+                <span className="key">
+                  {item.key}
+                </span>
+              </p>
             </ListItem>
           </Tooltip>
         )

@@ -5,7 +5,7 @@ import {
   Form,
   Input,
   Button,
-  Modal,  
+  Modal,
 } from 'antd'
 
 const FormItem = Form.Item
@@ -15,7 +15,7 @@ const AliasRules = [{
 }, {
   required: true,
   message: 'Please input your alias',
-  
+
 }]
 
 const HostRules = [{
@@ -44,7 +44,7 @@ const formItemLayout = {
   wrapperCol: { span: 21 },
 }
 
-const RedisConfigModal = props => {  
+const RedisConfigModal = props => {
   const { getFieldDecorator } = props.form
 
   return (
@@ -55,19 +55,19 @@ const RedisConfigModal = props => {
             <FormItem {...formItemLayout} label="Alias">
               {getFieldDecorator('alias', { rules: AliasRules, initialValue: props.data.alias })(<Input />)}
             </FormItem>
-            
+
             <FormItem {...formItemLayout} label="Host">
               {getFieldDecorator('host', { rules: HostRules, initialValue: props.data.host })(<Input />)}
             </FormItem>
-            
+
             <FormItem {...formItemLayout} label="Port">
               {getFieldDecorator('port', { rules: PortRules, initialValue: props.data.port })(<Input />)}
             </FormItem>
-            
+
             <FormItem {...formItemLayout} label="Auth">
               {getFieldDecorator('auth', { rules: AuthRules, initialValue: props.data.auth })(<Input type="password" />)}
             </FormItem>
-            
+
             <FormItem {...formItemLayout} colon={false} className="form-btn" label=" ">
               <Button
                 onClick={() => {

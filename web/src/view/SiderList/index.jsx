@@ -23,10 +23,10 @@ class AppTabs extends React.Component {
     this.props.GetConnectConfig()
     this.props.history.replace('/')
   }
-  
+
   onClickMenuItem(e) {
     const key = e.key
-    
+
     if (key === 'add') {
       // this.props.history.push("/")
       this.setState({
@@ -34,7 +34,7 @@ class AppTabs extends React.Component {
         isEdit: false,
         modalData: {},
       })
-      
+
       return
     }
 
@@ -71,11 +71,11 @@ class AppTabs extends React.Component {
     }
   }
 
-  renderModal() { 
+  renderModal() {
     if (!this.state.showModal) {
       return <div />
     }
-    
+
     return (
       <Modal
         title="Reids Config"
@@ -114,9 +114,9 @@ class AppTabs extends React.Component {
             <Icon type="setting" />
             <span>新增Redis连接</span>
           </MenuItem>
-          
+
           {
-            confKeys.map(alias => (              
+            confKeys.map(alias => (
               <SubMenu
                 key={alias}
                 title={
@@ -136,7 +136,7 @@ class AppTabs extends React.Component {
         {this.renderModal()}
       </>
     )
-  }   
+  }
 }
 
 const mapStateToProps = state => ({
