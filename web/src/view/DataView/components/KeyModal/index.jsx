@@ -12,6 +12,13 @@ import {
 const FormItem = Form.Item
 const { Option } = Select
 
+const TypeRules = [{
+  message: 'The input is not valid alias',
+}, {
+  required: true,
+  message: 'Please select correct type',
+}]
+
 const ExpireRules = [{
   message: 'The input is not valid alias',
 }, {
@@ -20,26 +27,19 @@ const ExpireRules = [{
   pattern: /^-?[0-9]+$/,
 }]
 
-const HostRules = [{
+const FieldRules = [{
+  message: 'The input is not valid host',
+}, {
+  required: true,
+  message: 'Please input your host',
+}]
+
+const ValueRules = [{
   message: 'The input is not valid host',
 }, {
   required: true,
   message: 'Please input your host',
 }] 
-
-const PortRules = [{
-  message: 'The input is not valid port',
-}, {
-  required: true,
-  message: 'Please input your port',
-  pattern: /^[0-9]+$/,
-}]
-
-const AuthRules = [{
-  message: 'The input is not valid auth',
-}, {
-  message: 'Please input your auth',
-}]
 
 const formItemLayout = {
   labelCol: { span: 3 },
@@ -58,7 +58,7 @@ const CreateKeyModal = props => {
         <Col className="config-panel" span={24}>
           <Form className="config-form">
             <FormItem {...formItemLayout} label="Type">
-              {getFieldDecorator('type', { initialValue: 'string' })(
+              {getFieldDecorator('type', { rules: TypeRules, initialValue: 'string' })( 
                 <Select>
                   <Option value="string">String</Option>
                   <Option value="hash">Hash</Option>
@@ -74,11 +74,11 @@ const CreateKeyModal = props => {
             </FormItem>
        
             <FormItem {...formItemLayout} label="Field">
-              {getFieldDecorator('host', { rules: HostRules, initialValue: '' })(<Input />)}
+              {getFieldDecorator('field', { rules: FieldRules, initialValue: '' })(<Input />)}
             </FormItem>
             
             <FormItem {...formItemLayout} label="Value">
-              {getFieldDecorator('host', { rules: HostRules, initialValue: '' })(<Input />)}
+              {getFieldDecorator('value', { rules: ValueRules, initialValue: '' })(<Input />)}
             </FormItem>
             
             <FormItem {...formItemLayout} colon={false} className="form-btn" label=" ">
