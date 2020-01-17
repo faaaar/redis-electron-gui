@@ -2,20 +2,9 @@ import React from 'react'
 import { Col, Row } from 'antd'
 import FieldList from './FieldList'
 import ValueDetail from './ValueDetail'
+import KeyHeader from './KeyHeader'
 
 import './index.scss'
-
-const DetailHeader = props => {
-  if (props.show) {
-    return <></>
-  }
-
-  return (
-    <Col className="detail-header">
-
-    </Col>
-  )
-}
 
 const KeyDetail = props => {
   const [value, setValue] = props.data
@@ -26,7 +15,15 @@ const KeyDetail = props => {
 
   return (
     <Row className="app-key-detail">
-      <DetailHeader />
+      <Col>
+        <KeyHeader
+          newKey={() => props.newKey()}
+          deleteKey={() => props.deleteKey()}
+          saveValue={type => props.saveValue(type)}
+          value={[value, setValue]}
+          _value={[_value, _setValue]}
+        />
+      </Col>
       <Col>
         <Row className="detail-container">
           <Col span={6}>
@@ -40,7 +37,7 @@ const KeyDetail = props => {
             <ValueDetail
               value={[value, setValue]}
               deleteField={() => props.deleteField()}
-              saveValue={() => props.saveValue()}
+              saveValue={() => props.saveValue('normal')}
             />
           </Col>
         </Row>

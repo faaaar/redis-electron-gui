@@ -7,9 +7,12 @@ import {
   RedisSetValue,
   RedisDeleteKey,
   RedisDeleteField,
+  RedisSetExpire,
 } from '@action/redis'
+import { AddConnectConfig } from '@action/global'
 import KeyList from './components/KeyList'
 import KeyDetail from './components/KeyDetail'
+import KeyModal from './components/KeyModal'
 
 class DataView extends React.Component {
   constructor(props) {
@@ -20,6 +23,7 @@ class DataView extends React.Component {
       showModal: false,
       modalData: {},
       showDetail: false,
+      searchKey: '',
       value: {
         ttl: -1,
         type: '',
@@ -31,6 +35,7 @@ class DataView extends React.Component {
         key: '',
         score: '',
         member: '',
+        idx: -1,
       },
       _value: {
         ttl: -1,
@@ -43,6 +48,7 @@ class DataView extends React.Component {
         key: '',
         score: '',
         member: '',
+        idx: -1,
       },
     }
   }
@@ -56,11 +62,12 @@ class DataView extends React.Component {
 
     this.setState({
       loading: false,
+      searchKey,
     })
   }
 
   async onSelect(connInfo, item) {
-    const obj = await this.props.SearchKeyDetail(connInfo, item)
+    const obj = await SearchKeyDetail(connInfo, item)
     const type = obj.type
     const values = obj.values
     let fieldList = []
@@ -92,6 +99,7 @@ class DataView extends React.Component {
       member: '',
       field: '',
       score: 0,
+      idx: -1,
     }
     this.setState({
       value,
@@ -99,15 +107,16 @@ class DataView extends React.Component {
     })
   }
 
-  renderModal() {
+  renderKeyModal() {
     const showModal = this.state.showModal
     if (!showModal) {
       return <div />
     }
+    const modalData = this.state.modalData
 
     return (
       <Modal
-        title="Reids Config"
+        title="Key Config"
         visible={showModal}
         mask={true}
         maskClosable={false}
@@ -115,14 +124,9 @@ class DataView extends React.Component {
         onCancel={() => this.setState({
           showModal: false,
           modalData: {},
-          isEdit: false,
         })}
       >
-        <KeyDetail
-          isEdit={this.state.isEdit}
-          submit={data => this.props.AddConnectConfig(data)}
-          data={this.state.modalData}
-        />
+        <KeyModal />
       </Modal>
     )
   }
@@ -148,17 +152,37 @@ class DataView extends React.Component {
           </Col>
           <Col span={18}>
             <KeyDetail
-              saveValue={() => this.props.RedisSetValue(connInfo, value, _value)}
+              newKey={() => {
+                this.setState({
+                  showModal: true,
+                  modalData: {},
+                })
+                console.log("New")
+              }}
+              deleteKey={async () => {
+                await RedisDeleteKey(connInfo, value)
+                await this.onSearch(connInfo, this.state.searchKey)
+              }}
+              saveValue={type => {
+                switch(type) {
+                  case 'normal':
+                    RedisSetValue(connInfo, value, _value)
+                    break
+                  case 'ttl':
+                    RedisSetExpire(connInfo, value)
+                    break
+                }                
+              }}
               deleteField={async () => {
-                await this.props.RedisDeleteField(connInfo, value, _value)
+                await RedisDeleteField(connInfo, value, _value)
                 await this.onSelect(connInfo, value)
               }}
-              deleteKey={() => this.props.RedisDeleteKey(connInfo, value, _value)}
               data={[ value, setValue ]}
               _data={[ _value, _setValue ]}
             />
           </Col>
         </Row>
+        {this.renderKeyModal()}
       </div>
     )
   }
@@ -166,10 +190,7 @@ class DataView extends React.Component {
 
 const mapDispatchToProps = dispatch => ({
   SearchKeys: (connInfo, searchKey) => SearchKeys(connInfo, searchKey, dispatch),
-  SearchKeyDetail: async(connInfo, item, field) => await SearchKeyDetail(connInfo,item,field),
-  RedisSetValue: async(connInfo, value, _value) => await RedisSetValue(connInfo, value, _value),
-  RedisDeleteField: async(connInfo, value, _value) => await RedisDeleteField(connInfo, value, _value),
-  RedisDeleteKey: async(connInfo, value, _value) => await RedisDeleteKey(connInfo, value, _value),
+  AddConnectConfig: config => dispatch(AddConnectConfig(config)),
 })
 
 const mapStateToProps = state => ({

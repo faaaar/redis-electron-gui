@@ -28,7 +28,7 @@ const ValueDetail = props => {
     <>
       <TextArea
         onChange={e => updateFunc(e.target.value)}
-        autoSize={{ minRows: 10 }}
+        autoSize={{ minRows: 20 }}
         value={v}
       />
 

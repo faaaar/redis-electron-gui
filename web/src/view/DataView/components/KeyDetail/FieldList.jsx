@@ -30,11 +30,13 @@ const FieldList = props => {
       className="field-list"
       bordered
       dataSource={list}
-      renderItem={item => {
+      renderItem={(item, idx) => {
         let selected = false
 
         switch (type) {
           case 'list':
+            selected = idx === value.idx
+            break
           case 'hash':
             selected = item === value.field
             break
@@ -56,7 +58,7 @@ const FieldList = props => {
               const _nextValue = { ..._value }
               const set = (k, v) => {
                 nextValue[k] = v
-                _nextValue[k] =v
+                _nextValue[k] = v
               }
               
               switch (type) {
@@ -64,12 +66,13 @@ const FieldList = props => {
                   set('member', item)
                   set('score', value.values[item])
                   break
-                case 'list':
-                  set('field', item)
+                case 'list': 
+                  set('idx', idx)
                   set('value', item)
                   break
                 case 'set':
                   set('member', item)
+                  set('idx', idx)
                   break
                 case 'hash':
                   set('field', item)
@@ -78,7 +81,7 @@ const FieldList = props => {
                 default:
                   console.error('NO THIS TYPE')
               }
-              
+
               _setValue(_nextValue)
               setValue(nextValue)
             }}
