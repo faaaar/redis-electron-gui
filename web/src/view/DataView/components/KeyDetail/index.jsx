@@ -19,6 +19,7 @@ const DetailHeader = props => {
 
 const KeyDetail = props => {
   const [value, setValue] = props.data
+  const [_value, _setValue] = props._data
   const type = value.type
   const showField = type !== 'string'
   const contentWidth = showField ? 18 : 24
@@ -29,7 +30,11 @@ const KeyDetail = props => {
       <Col>
         <Row className="detail-container">
           <Col span={6}>
-            <FieldList value={[value, setValue]} show={showField} />
+            <FieldList
+              value={[value, setValue]}
+              _value={[_value, _setValue]}
+              show={showField}
+            />
           </Col>
           <Col span={contentWidth} className="value">
             <ValueDetail

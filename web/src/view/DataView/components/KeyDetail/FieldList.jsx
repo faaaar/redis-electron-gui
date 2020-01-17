@@ -9,6 +9,7 @@ const FieldList = props => {
   }
 
   const [ value, setValue ] = props.value
+  const [ _value, _setValue ] = props._value
   const values = value.values
   const fieldList = value.fieldList || []
   const memberList = value.memberList || []
@@ -38,6 +39,8 @@ const FieldList = props => {
             selected = item === value.field
             break
           case 'set':
+            selected = item === _value.member
+            break
           case 'zset':
             selected = item === value.member
             break
@@ -47,30 +50,36 @@ const FieldList = props => {
 
         return (
           <ListItem
-            className={selected?'selected':''}
+            className={selected ? 'selected' : ''}
             onClick={() => {
               const nextValue = { ...value }
-
+              const _nextValue = { ..._value }
+              const set = (k, v) => {
+                nextValue[k] = v
+                _nextValue[k] =v
+              }
+              
               switch (type) {
                 case 'zset':
-                  nextValue.member = item
-                  nextValue.score = value.values[item]
+                  set('member', item)
+                  set('score', value.values[item])
                   break
                 case 'list':
-                  nextValue.field = item
-                  nextValue.value = item
+                  set('field', item)
+                  set('value', item)
                   break
                 case 'set':
-                  nextValue.member = item
+                  set('member', item)
                   break
                 case 'hash':
-                  nextValue.field = item
-                  nextValue.value = values[item]
+                  set('field', item)
+                  set('value', values[item])
                   break
                 default:
                   console.error('NO THIS TYPE')
               }
-
+              
+              _setValue(_nextValue)
               setValue(nextValue)
             }}
           >

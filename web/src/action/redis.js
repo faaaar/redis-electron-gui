@@ -182,10 +182,8 @@ export const RedisSetValue = async (connInfo, data, _data) => {
       score,
     } = data
 
-    const {
-      _member,
-    } = _data
-
+    const _member = _data.member
+    
     let response = null
 
     switch(type) {
@@ -224,10 +222,54 @@ export const RedisSetValue = async (connInfo, data, _data) => {
     window.alertError(err)
   }
 
-
   return false
 }
 
-export const RedisDeleteKey = async (connInfo, data, _data) => false
+export const RedisDeleteKey = async (connInfo, data, _data) => {
+  
+}
 
-export const RedisDeleteField = async (connInfo, data, _data) => false
+export const RedisDeleteField = async (connInfo, data, _data) => {
+  try {
+    const redis = connInfo.redis
+
+    const {
+      key,
+      type,
+      value,      
+      field,
+      fieldList,
+    } = data
+
+    const _member = _data.member    
+    let response = null
+    
+    switch(type) {
+      case 'list':       
+        response = await redis.lrem(key, fieldList.indexOf(field), field)
+        break
+      case 'hash':
+        response = await redis.hdel(key, field)
+        break
+      case 'zset':
+        response = await redis.zrem(key, _member)
+        break
+      case 'set':
+        response = await redis.srem(key, _member)
+        break
+      default:
+        console.error(`NO KEY TYPE ----- ${value.type}`)
+    }
+
+    if (response) {
+      window.alertSuccess()
+      return true
+    }
+
+    window.alertError(response)
+  } catch(err) {
+    window.alertError(err)
+  }
+
+  return false
+}

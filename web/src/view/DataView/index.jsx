@@ -100,14 +100,15 @@ class DataView extends React.Component {
   }
 
   renderModal() {
-    if (!this.state.showModal) {
+    const showModal = this.state.showModal
+    if (!showModal) {
       return <div />
     }
 
     return (
       <Modal
         title="Reids Config"
-        visible={this.state.showModal}
+        visible={showModal}
         mask={true}
         maskClosable={false}
         footer={null}
@@ -131,6 +132,7 @@ class DataView extends React.Component {
     const data = this.props.keys[connInfo.id] || []
     const { value, _value } = this.state
     const setValue = value => this.setState({ value })
+    const _setValue = _value => this.setState({ _value })
 
     return (
       <div>
@@ -147,9 +149,13 @@ class DataView extends React.Component {
           <Col span={18}>
             <KeyDetail
               saveValue={() => this.props.RedisSetValue(connInfo, value, _value)}
-              deleteField={() => this.props.RedisDeleteField(connInfo, value, _value)}
+              deleteField={async () => {
+                await this.props.RedisDeleteField(connInfo, value, _value)
+                await this.onSelect(connInfo, value)
+              }}
               deleteKey={() => this.props.RedisDeleteKey(connInfo, value, _value)}
               data={[ value, setValue ]}
+              _data={[ _value, _setValue ]}
             />
           </Col>
         </Row>
