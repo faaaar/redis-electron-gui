@@ -34,7 +34,7 @@ const KeyHeader = props => {
             onPressEnter={() => props.saveValue('ttl')}
           />
         </FormItem>
-       
+
         <FormItem>
           <Button onClick={() => props.newKey()}>新增</Button>
         </FormItem>

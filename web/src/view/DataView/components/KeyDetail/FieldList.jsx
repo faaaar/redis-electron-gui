@@ -1,6 +1,6 @@
 import React from 'react'
 import { List, Icon } from 'antd'
-import { ContextMenu, MenuItem, ContextMenuTrigger } from "react-contextmenu"
+import { ContextMenu, MenuItem, ContextMenuTrigger } from 'react-contextmenu'
 
 const ListItem = List.Item
 
@@ -34,7 +34,7 @@ const FieldList = props => {
       renderItem={(item, idx) => {
         let selected = false
         const key = value.key
-        
+
         switch (type) {
           case 'list':
             selected = idx === value.idx
@@ -54,7 +54,7 @@ const FieldList = props => {
 
         return (
           <>
-            <ContextMenuTrigger id={`${key}-${idx}`}> 
+            <ContextMenuTrigger id={`${key}-${idx}`}>
               <ListItem
                 className={selected ? 'selected' : ''}
                 onClick={() => {

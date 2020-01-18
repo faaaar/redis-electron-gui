@@ -36,7 +36,7 @@ class DataView extends React.Component {
         key: '',
         score: '',
         member: '',
-        idx: -1,
+        idx: -1,        
       },
       _value: {
         ttl: -1,
@@ -58,7 +58,7 @@ class DataView extends React.Component {
     this.setState({
       loading: true,
     })
-    
+
     if (!searchKey) {
       Modal.confirm({
         title: '警告',
@@ -67,7 +67,7 @@ class DataView extends React.Component {
         cancelText: '取消',
         onOk: async () => {
           await this.props.SearchKeys(connInfo, searchKey)
-        }
+        },
       })
     } else {
       await this.props.SearchKeys(connInfo, searchKey)
@@ -154,7 +154,7 @@ class DataView extends React.Component {
   render() {
     const connInfo = this.props.getCurrConn() || {}
     const data = this.props.keys[connInfo.id] || []
-    const { value, _value } = this.state
+    const { value, _value, searchKey } = this.state
     const setValue = value => this.setState({ value })
     const _setValue = _value => this.setState({ _value })
 
@@ -163,9 +163,9 @@ class DataView extends React.Component {
         <Row>
           <Col span={6}>
             <KeyList
-              deleteKey={async item => {
-                await RedisDeleteKey(connInfo, item)
-                await this.onSearch(connInfo, this.state.searchKey)
+              deleteKey={async data => {
+                await RedisDeleteKey(connInfo, data)
+                await this.onSearch(connInfo, searchKey)
               }}
               value={this.state.value}
               loading={this.state.loading}
@@ -181,11 +181,7 @@ class DataView extends React.Component {
                   showModal: true,
                   modalData: {},
                 })
-              }}
-              deleteKey={async () => {
-                await RedisDeleteKey(connInfo, value)
-                await this.onSearch(connInfo, this.state.searchKey)
-              }}
+              }}              
               saveValue={type => {
                 switch(type) {
                   case 'normal':
@@ -196,7 +192,7 @@ class DataView extends React.Component {
                     break
                 }
               }}
-              deleteField={async data => {              
+              deleteField={async data => {
                 await RedisDeleteField(connInfo, data)
                 await this.onSelect(connInfo, value)
               }}

@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { List, Input, Icon, Tooltip } from 'antd'
-import { ContextMenu, MenuItem, ContextMenuTrigger } from "react-contextmenu"
+import { ContextMenu, MenuItem, ContextMenuTrigger } from 'react-contextmenu'
 import './index.scss'
 
 const ListItem = List.Item
@@ -71,10 +71,10 @@ const KeyList = props => {
       renderItem={item => {
         const backgroundColor = colorSet[item.type]
         const selected = item.key === props.value.key
-        
+
         return (
           <>
-            <ContextMenuTrigger id={item.key}> 
+            <ContextMenuTrigger id={item.key}>
               <Tooltip mouseEnterDelay={0.5} title={item.key}>
                 <ListItem
                   className={selected ? 'selected' : ''}
