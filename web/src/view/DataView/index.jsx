@@ -8,6 +8,7 @@ import {
   RedisDeleteKey,
   RedisDeleteField,
   RedisSetExpire,
+  RedisCreateKey,
 } from '@action/redis'
 import { AddConnectConfig } from '@action/global'
 import KeyList from './components/KeyList'
@@ -57,8 +58,20 @@ class DataView extends React.Component {
     this.setState({
       loading: true,
     })
-
-    await this.props.SearchKeys(connInfo, searchKey)
+    
+    if (!searchKey) {
+      Modal.confirm({
+        title: '警告',
+        content: '搜索的Key为*，是否继续？',
+        okText: '继续',
+        cancelText: '取消',
+        onOk: async () => {
+          await this.props.SearchKeys(connInfo, searchKey)
+        }
+      })
+    } else {
+      await this.props.SearchKeys(connInfo, searchKey)
+    }
 
     this.setState({
       loading: false,
@@ -69,7 +82,7 @@ class DataView extends React.Component {
   async onSelect(connInfo, item) {
     const obj = await SearchKeyDetail(connInfo, item)
     const type = obj.type
-    const values = obj.values
+    const values = obj.values || {}
     let fieldList = []
     let memberList = []
 
@@ -113,6 +126,7 @@ class DataView extends React.Component {
       return <div />
     }
     const modalData = this.state.modalData
+    const connInfo = this.props.getCurrConn() || {}
 
     return (
       <Modal
@@ -126,7 +140,13 @@ class DataView extends React.Component {
           modalData: {},
         })}
       >
-        <KeyModal />
+        <KeyModal
+          submit={async v => {
+            console.log(v)
+            await RedisCreateKey(connInfo, v)
+            await this.onSearch(connInfo, this.state.searchKey)
+          }}
+        />
       </Modal>
     )
   }
@@ -143,6 +163,10 @@ class DataView extends React.Component {
         <Row>
           <Col span={6}>
             <KeyList
+              deleteKey={async item => {
+                await RedisDeleteKey(connInfo, item)
+                await this.onSearch(connInfo, this.state.searchKey)
+              }}
               value={this.state.value}
               loading={this.state.loading}
               data={data}
@@ -157,7 +181,6 @@ class DataView extends React.Component {
                   showModal: true,
                   modalData: {},
                 })
-                console.log("New")
               }}
               deleteKey={async () => {
                 await RedisDeleteKey(connInfo, value)
@@ -171,10 +194,10 @@ class DataView extends React.Component {
                   case 'ttl':
                     RedisSetExpire(connInfo, value)
                     break
-                }                
+                }
               }}
-              deleteField={async () => {
-                await RedisDeleteField(connInfo, value, _value)
+              deleteField={async data => {              
+                await RedisDeleteField(connInfo, data)
                 await this.onSelect(connInfo, value)
               }}
               data={[ value, setValue ]}

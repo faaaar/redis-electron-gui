@@ -161,7 +161,7 @@ export const RedisSetValue = async (connInfo, data, _data) => {
     } = data
 
     const _member = _data.member
-    
+
     let response = null
 
     switch(type) {
@@ -208,7 +208,7 @@ export const RedisDeleteKey = async (connInfo, data) => {
     const redis = connInfo.redis
     const { key } = data
 
-    await redis.del(key)    
+    await redis.del(key)
 
     window.alertSuccess()
     return true
@@ -219,32 +219,88 @@ export const RedisDeleteKey = async (connInfo, data) => {
   return false
 }
 
-export const RedisDeleteField = async (connInfo, data, _data) => {
+export const RedisDeleteField = async (connInfo, data) => {
   try {
     const redis = connInfo.redis
 
     const {
       key,
       type,
-      value,      
-      field,
       idx,
+      item,
     } = data
 
-    const _member = _data.member    
-    
+    // const _member = _data.member
+
+
     switch(type) {
-      case 'list':       
-        await redis.lrem(key, idx, value)
+      case 'list':
+        await redis.lrem(key, idx, item)
         break
       case 'hash':
-        await redis.hdel(key, field)
+        await redis.hdel(key, item)
         break
       case 'zset':
-        await redis.zrem(key, _member)
+        await redis.zrem(key, item)
         break
       case 'set':
-        await redis.srem(key, _member)
+        await redis.srem(key, item)
+        break
+      default:
+        console.error(`NO KEY TYPE ----- ${type}`)
+    }
+
+    window.alertSuccess()
+    return true
+  } catch(err) {
+    window.alertError(err)
+  }
+
+  return false
+}
+
+export const RedisCreateKey = async (connInfo, data) => {
+  try {
+    const redis = connInfo.redis
+
+    const {
+      key,
+      type,
+      value,
+      field,
+      score,
+      member,
+    } = data
+
+    const expire = data.expire || -1
+    console.log(data)
+    switch(type) {
+      case 'string':
+        await redis.set(key, [ value, 'EX', expire ])
+        break
+      case 'list':
+        await redis.multi()
+          .lpush(key, [ value ])
+          .expire(key, expire )
+          .exec()
+        break
+      case 'hash':
+        await redis.multi()
+          .hset(key, [ field, value ])
+          .expire(key, expire )
+          .exec()
+        break
+      case 'zset':
+        await redis.multi()
+          .zadd(key, [ score, member])
+          .expire(key, expire )
+          .exec()
+        break
+      case 'set':
+        await redis.multi()
+          .sadd(key, [ member ])
+          .expire(key, expire )
+          .exec()
         break
       default:
         console.error(`NO KEY TYPE ----- ${value.type}`)

@@ -1,5 +1,6 @@
 import React from 'react'
-import { List } from 'antd'
+import { List, Icon } from 'antd'
+import { ContextMenu, MenuItem, ContextMenuTrigger } from "react-contextmenu"
 
 const ListItem = List.Item
 
@@ -32,7 +33,8 @@ const FieldList = props => {
       dataSource={list}
       renderItem={(item, idx) => {
         let selected = false
-
+        const key = value.key
+        
         switch (type) {
           case 'list':
             selected = idx === value.idx
@@ -51,43 +53,60 @@ const FieldList = props => {
         }
 
         return (
-          <ListItem
-            className={selected ? 'selected' : ''}
-            onClick={() => {
-              const nextValue = { ...value }
-              const _nextValue = { ..._value }
-              const set = (k, v) => {
-                nextValue[k] = v
-                _nextValue[k] = v
-              }
-              
-              switch (type) {
-                case 'zset':
-                  set('member', item)
-                  set('score', value.values[item])
-                  break
-                case 'list': 
-                  set('idx', idx)
-                  set('value', item)
-                  break
-                case 'set':
-                  set('member', item)
-                  set('idx', idx)
-                  break
-                case 'hash':
-                  set('field', item)
-                  set('value', values[item])
-                  break
-                default:
-                  console.error('NO THIS TYPE')
-              }
+          <>
+            <ContextMenuTrigger id={`${key}-${idx}`}> 
+              <ListItem
+                className={selected ? 'selected' : ''}
+                onClick={() => {
+                  const nextValue = { ...value }
+                  const _nextValue = { ..._value }
+                  const set = (k, v) => {
+                    nextValue[k] = v
+                    _nextValue[k] = v
+                  }
 
-              _setValue(_nextValue)
-              setValue(nextValue)
-            }}
-          >
-            <p><span className="text">{item}</span></p>
-          </ListItem>
+                  switch (type) {
+                    case 'zset':
+                      set('member', item)
+                      set('score', value.values[item])
+                      break
+                    case 'list':
+                      set('idx', idx)
+                      set('value', item)
+                      break
+                    case 'set':
+                      set('member', item)
+                      set('idx', idx)
+                      break
+                    case 'hash':
+                      set('field', item)
+                      set('value', values[item])
+                      break
+                    default:
+                      console.error('NO THIS TYPE')
+                  }
+
+                  _setValue(_nextValue)
+                  setValue(nextValue)
+                }}
+              >
+                <p><span className="text">{item}</span></p>
+              </ListItem>
+            </ContextMenuTrigger>
+            <ContextMenu id={`${key}-${idx}`}>
+              <MenuItem
+                onClick={() => props.deleteField({
+                  key,
+                  type,
+                  idx,
+                  item,
+                })}
+              >
+                <span className="text">Delete</span>
+                <span className="icon"><Icon type="delete" /></span>
+              </MenuItem>
+            </ContextMenu>
+          </>
         )
       }}
     />

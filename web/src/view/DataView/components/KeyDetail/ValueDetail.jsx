@@ -32,8 +32,7 @@ const ValueDetail = props => {
         value={v}
       />
 
-      <Button onClick={() => props.saveValue()}>保存</Button>
-      <Button onClick={() => props.deleteField()}>删除</Button>
+      <Button onClick={() => props.saveValue()}>Save</Button>
     </>
   )
 }

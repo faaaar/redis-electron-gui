@@ -112,7 +112,7 @@ class AppTabs extends React.Component {
         >
           <MenuItem key="add">
             <Icon type="setting" />
-            <span>新增Redis连接</span>
+            <span>New Redis Connect</span>
           </MenuItem>
 
           {
@@ -126,9 +126,9 @@ class AppTabs extends React.Component {
                   </span>
                 }
               >
-                <MenuItem key={`connect-${alias}`}>连接</MenuItem>
-                <MenuItem key={`edit-${alias}`}>编辑</MenuItem>
-                <MenuItem key={`del-${alias}`}>删除</MenuItem>
+                <MenuItem key={`connect-${alias}`}>Connect</MenuItem>
+                <MenuItem key={`edit-${alias}`}>Edit</MenuItem>
+                <MenuItem key={`del-${alias}`}>Delete</MenuItem>
               </SubMenu>
             ))
           }

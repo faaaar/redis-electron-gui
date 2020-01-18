@@ -12,6 +12,7 @@ import SiderList from '@view/SiderList'
 
 import * as serviceWorker from './serviceWorker'
 import './index.scss'
+import './react-contextmenu.scss'
 
 const {
   Content,

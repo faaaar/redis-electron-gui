@@ -28,6 +28,7 @@ const KeyDetail = props => {
         <Row className="detail-container">
           <Col span={6}>
             <FieldList
+              deleteField={data => props.deleteField(data)}
               value={[value, setValue]}
               _value={[_value, _setValue]}
               show={showField}

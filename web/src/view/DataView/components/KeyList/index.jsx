@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { List, Input, Icon, Tooltip } from 'antd'
+import { ContextMenu, MenuItem, ContextMenuTrigger } from "react-contextmenu"
 import './index.scss'
 
 const ListItem = List.Item
@@ -70,28 +71,39 @@ const KeyList = props => {
       renderItem={item => {
         const backgroundColor = colorSet[item.type]
         const selected = item.key === props.value.key
-
+        
         return (
-          <Tooltip mouseEnterDelay={0.5} title={item.key}>
-            <ListItem
-              className={selected ? 'selected' : ''}
-              style={{
-                cursor: 'pointer',
-                display: 'flex',
-                flexFlow: 'row nowrap',
-              }}
-              onClick={() => onSelect(item)}
-            >
-              <p>
-                <span style={{ backgroundColor }} className="type">
-                  {item.type}
-                </span>
-                <span className="key">
-                  {item.key}
-                </span>
-              </p>
-            </ListItem>
-          </Tooltip>
+          <>
+            <ContextMenuTrigger id={item.key}> 
+              <Tooltip mouseEnterDelay={0.5} title={item.key}>
+                <ListItem
+                  className={selected ? 'selected' : ''}
+                  style={{
+                    cursor: 'pointer',
+                    display: 'flex',
+                    flexFlow: 'row nowrap',
+                  }}
+                  onClick={() => onSelect(item)}
+                >
+                  <p>
+                    <span style={{ backgroundColor }} className="type">
+                      {item.type}
+                    </span>
+                    <span className="key">
+                      {item.key}
+                    </span>
+                  </p>
+                </ListItem>
+
+              </Tooltip>
+            </ContextMenuTrigger>
+            <ContextMenu id={item.key}>
+              <MenuItem onClick={() => props.deleteKey(item)}>
+                <span className="text">Delete</span>
+                <span className="icon"><Icon type="delete" /></span>
+              </MenuItem>
+            </ContextMenu>
+          </>
         )
       }}
     />
